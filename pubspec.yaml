@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_native_splash: ^2.3.10
+  google_fonts: ^6.1.0
+  lottie: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -26,3 +28,10 @@ flutter_launcher_icons:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/splash_background.jpg
+    - assets/loading_lottie.json
+  fonts:
+    - family: ProtestRiot
+      fonts:
+        - asset: fonts\ProtestRiot-Regular.ttf
