@@ -12,24 +12,29 @@ class SplashScreen extends StatelessWidget {
     Future.delayed(const Duration(seconds: 3), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final bool? firstLaunch = prefs.getBool('first_launch');
-      if (firstLaunch == null || firstLaunch == true) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const OnBoardingScreen()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MenuScreen()),
-        );
-      }
+      // if (firstLaunch == null || firstLaunch == true) {
+      //   Navigator.pushAndRemoveUntil(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => const OnBoardingScreen()),
+      //   );
+      // } else {
+      //   Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(builder: (context) => const MenuScreen()),
+      //   );
+      // }
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => OnBoardingScreen()),
+        (route) => false,
+      );
     });
 
     return Scaffold(
         body: Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/splash_background.jpg'),
+          image: AssetImage('assets/background/splash_background.jpg'),
           fit: BoxFit.cover,
         ),
       ),
@@ -47,9 +52,9 @@ class SplashScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 60.0),
               child: Lottie.asset(
-                'assets/loading_lottie.json',
-                width: 200,
-                height: 200,
+                'assets/lottie/loading_lottie2.json',
+                // width: 200,
+                // height: 200,
                 fit: BoxFit.cover,
               ),
             )

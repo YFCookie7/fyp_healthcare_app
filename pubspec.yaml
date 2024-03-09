@@ -13,6 +13,8 @@ dependencies:
   google_fonts: ^6.1.0
   lottie: ^3.0.0
   shared_preferences: ^2.2.2
+  smooth_page_indicator: ^1.1.0
+  liquid_swipe: ^3.1.0
 
 dev_dependencies:
   flutter_test:
@@ -23,16 +25,19 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/adaptive_icon_foreground.png"
-  adaptive_icon_foreground: "assets/adaptive_icon_foreground.png"
-  adaptive_icon_background: "assets/adaptive_icon_background.png"
+  image_path: "assets/icon/adaptive_icon_foreground.png"
+  adaptive_icon_foreground: "assets/icon/adaptive_icon_foreground.png"
+  adaptive_icon_background: "assets/icon/adaptive_icon_background.png"
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/splash_background.jpg
-    - assets/loading_lottie.json
+    - assets/background/
+    - assets/lottie/
   fonts:
     - family: ProtestRiot
       fonts:
         - asset: fonts\ProtestRiot-Regular.ttf
+    - family: PatuaOne
+      fonts:
+        - asset: fonts\PatuaOne-Regular.ttf
