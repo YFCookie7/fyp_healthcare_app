@@ -25,366 +25,46 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 // Smart Alarm: Wake up gently during your light sleep phase, ensuring you start your day feeling refreshed and ready to conquer your goals.
 // Handle your data: Store your sleep data safely..??
 
-    final List<Container> pages = [
-      Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background/onboarding_p1.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen()),
-                    (route) => false,
-                  );
-                },
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Icon(Icons.skip_next, color: Colors.white),
-                    SizedBox(width: 4),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Lottie.asset(
-              'assets/lottie/onboarding_lottie_1.json',
-              height: 260,
-            ),
-            const SizedBox(height: 25),
-            const Text(
-              'Wearable Sleep Tracker',
-              style: TextStyle(
-                fontFamily: 'PatuaOne',
-                fontSize: 34,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 25),
-            const SizedBox(
-              width: 300,
-              child: Text(
-                'Seamlessly track your sleep with our Wearable Sleep Tracker. Effortlessly monitor your sleep on the go, ensuring precise insights no matter where life takes you.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-          ],
-        ),
+    final List<SubPages> pages = [
+      SubPages(
+        backgroundPath: 'assets/background/onboarding_p1.jpg',
+        lottiePath: 'assets/lottie/onboarding_lottie_3.json',
+        title: 'Sleep Cycle',
+        description:
+            'Dive into the realm of improved sleep habits as we meticulously track your sleep cycles. Understand, monitor, and elevate your nightly rejuvenation.',
+        isLastPage: false,
       ),
-      Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background/onboarding_p2.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen()),
-                    (route) => false,
-                  );
-                },
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Icon(Icons.skip_next, color: Colors.white),
-                    SizedBox(width: 4),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Lottie.asset(
-              'assets/lottie/onboarding_lottie_3.json',
-              height: 260,
-            ),
-            const SizedBox(height: 25),
-            const Text(
-              'Sleep Cycle',
-              style: TextStyle(
-                fontFamily: 'PatuaOne',
-                fontSize: 34,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 25),
-            const SizedBox(
-              width: 300,
-              child: Text(
-                'Dive into the realm of improved sleep habits as we meticulously track your sleep cycles. Understand, monitor, and elevate your nightly rejuvenation.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-          ],
-        ),
+      SubPages(
+        backgroundPath: 'assets/background/onboarding_p2.jpg',
+        lottiePath: 'assets/lottie/onboarding_lottie_1.json',
+        title: 'Wearable Sleep Tracker',
+        description:
+            'Seamlessly track your sleep with our Wearable Sleep Tracker. Effortlessly monitor your sleep on the go, ensuring precise insights no matter where life takes you.',
+        isLastPage: false,
       ),
-      Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background/onboarding_p1.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen()),
-                    (route) => false,
-                  );
-                },
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Icon(Icons.skip_next, color: Colors.white),
-                    SizedBox(width: 4),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Lottie.asset(
-              'assets/lottie/onboarding_lottie_4.json',
-              height: 260,
-            ),
-            const SizedBox(height: 25),
-            const Text(
-              'Sleep Score',
-              style: TextStyle(
-                fontFamily: 'PatuaOne',
-                fontSize: 34,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 25),
-            const SizedBox(
-              width: 300,
-              child: Text(
-                'Experience a tailored journey with your very own Sleep Score. Receive personalized insights for optimal rest, guiding you towards a world of peaceful slumber.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-          ],
-        ),
+      SubPages(
+        backgroundPath: 'assets/background/onboarding_p1.jpg',
+        lottiePath: 'assets/lottie/onboarding_lottie_4.json',
+        title: 'Sleep Score',
+        description:
+            'Experience a tailored journey with your very own Sleep Score. Receive personalized insights for optimal rest, guiding you towards a world of peaceful slumber.',
+        isLastPage: false,
       ),
-      Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background/onboarding_p2.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen()),
-                    (route) => false,
-                  );
-                },
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Icon(Icons.skip_next, color: Colors.white),
-                    SizedBox(width: 4),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Lottie.asset(
-              'assets/lottie/onboarding_lottie_2.json',
-              height: 260,
-            ),
-            const SizedBox(height: 25),
-            const Text(
-              'Smart Alarm',
-              style: TextStyle(
-                fontFamily: 'PatuaOne',
-                fontSize: 34,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 25),
-            const SizedBox(
-              width: 300,
-              child: Text(
-                'Awaken gently during your light sleep phase, ensuring you start each day refreshed and prepared to conquer your goals. Say goodbye to groggy mornings!',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-          ],
-        ),
+      SubPages(
+        backgroundPath: 'assets/background/onboarding_p2.jpg',
+        lottiePath: 'assets/lottie/onboarding_lottie_2.json',
+        title: 'Smart Alarm',
+        description:
+            'Awaken gently during your light sleep phase, ensuring you start each day refreshed and prepared to conquer your goals. Say goodbye to groggy mornings!',
+        isLastPage: false,
       ),
-      Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background/onboarding_p1.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen()),
-                    (route) => false,
-                  );
-                },
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Skip',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Icon(Icons.skip_next, color: Colors.white),
-                    SizedBox(width: 4),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Lottie.asset(
-              'assets/lottie/onboarding_lottie_5.json',
-              height: 260,
-            ),
-            const SizedBox(height: 25),
-            const Text(
-              'Handle Your Data',
-              style: TextStyle(
-                fontFamily: 'PatuaOne',
-                fontSize: 34,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 25),
-            const SizedBox(
-              width: 300,
-              child: Text(
-                'Your data is encrypted in the local database. Enjoy the ease of exporting your encrypted data, putting you in control of your wellness journey.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.white,
-                ),
-                textAlign: TextAlign.justify,
-              ),
-            ),
-            const SizedBox(height: 45),
-            Container(
-              width: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.blue,
-              ),
-              child: TextButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen()),
-                    (route) => false,
-                  );
-                },
-                child: const Text(
-                  'Get Started',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
+      SubPages(
+        backgroundPath: 'assets/background/onboarding_p1.jpg',
+        lottiePath: 'assets/lottie/onboarding_lottie_5.json',
+        title: 'Handle your data',
+        description:
+            'Your data is encrypted and stored safely. We ensure that your sleep data is secure and private. No network connection required.',
+        isLastPage: true,
       ),
     ];
 
@@ -392,7 +72,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       body: Stack(
         children: [
           LiquidSwipe(
-            pages: pages,
+            pages: pages.map((page) => buildPage(context, page)).toList(),
             fullTransitionValue: 300,
             slideIconWidget: const Icon(Icons.arrow_forward_ios,
                 size: 30, color: Colors.white),
@@ -424,8 +104,119 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
+  Container buildPage(BuildContext context, SubPages page) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(page.backgroundPath),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const SizedBox(height: 40),
+          Align(
+            alignment: Alignment.topRight,
+            child: TextButton(
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => RegistrationScreen()),
+                  (route) => false,
+                );
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Skip',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Icon(Icons.skip_next, color: Colors.white),
+                  SizedBox(width: 4),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Lottie.asset(
+            page.lottiePath,
+            height: 260,
+          ),
+          const SizedBox(height: 25),
+          Text(
+            page.title,
+            style: const TextStyle(
+              fontFamily: 'PatuaOne',
+              fontSize: 34,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 25),
+          SizedBox(
+            width: 300,
+            child: Text(
+              page.description,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.justify,
+            ),
+          ),
+          if (page.isLastPage) const SizedBox(height: 55),
+          if (page.isLastPage)
+            Container(
+              width: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.blue,
+              ),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const RegistrationScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Text(
+                  'Get Started',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
   Future<void> setFirstLaunchFlag(bool flag) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('first_launch', flag);
   }
+}
+
+class SubPages {
+  late final String backgroundPath;
+  late final String lottiePath;
+  late final String title;
+  late final String description;
+  late final bool isLastPage;
+
+  SubPages({
+    required this.backgroundPath,
+    required this.lottiePath,
+    required this.title,
+    required this.description,
+    required this.isLastPage,
+  });
 }
