@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fyp_healthcare_app/splash_screen.dart';
+import 'package:fyp_healthcare_app/test/pi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 
@@ -10,13 +11,13 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   String piAddress = await getPiAddress('raspberry');
-  developer.log('Raspberry Pi IP Address: $piAddress', name: 'debug');
+  developer.log('Raspberry Pi IP Address: $piAddress', name: 'debug_main');
 
   String storedPiAddress = prefs.getString('piAddress') ?? '';
   if (storedPiAddress != piAddress && piAddress != '') {
     prefs.setString('piAddress', piAddress);
     developer.log('New ip address record stored in shared preference',
-        name: 'debug');
+        name: 'debug_main');
   }
 
   runApp(const MainApp());
@@ -27,7 +28,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: SplashScreen());
+    return const MaterialApp(home: PI());
   }
 }
 
@@ -37,10 +38,10 @@ Future<String> getPiAddress(String hostname) async {
     if (result.isNotEmpty && result.first.rawAddress.isNotEmpty) {
       return result.first.address;
     } else {
-      developer.log('Failed to find the device', name: 'debug');
+      developer.log('Failed to find the device', name: 'debug_main');
     }
   } on SocketException catch (e) {
-    developer.log('Error: $e', name: 'debug');
+    developer.log('Error: $e', name: 'debug_main');
   }
   return '';
 }
