@@ -28,14 +28,6 @@ class _PIState extends State<PI> {
     developer.log('PI Address in PI screen: $piAddress', name: 'debug_pi');
   }
 
-  void updateText() async {
-    setState(() {
-      makeGetRequest();
-      makePostRequest();
-      // textbox = piAddress;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +42,11 @@ class _PIState extends State<PI> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                updateText();
+                setState(() {
+                  // makeGetRequest();
+                  makePostRequest();
+                  // textbox = piAddress;
+                });
               },
               child: const Text('Button'),
             ),
@@ -60,15 +56,16 @@ class _PIState extends State<PI> {
     );
   }
 
+  // App request data from Pi
   Future<void> makeGetRequest() async {
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
         developer.log('GET request successful. Response: ${response.body}',
             name: 'debug_pi');
-        // setState(() {
-        //   textbox = response.body;
-        // });
+        setState(() {
+          textbox = response.body;
+        });
       } else {
         developer.log(
             'GET request failed with status code: ${response.statusCode}',
@@ -79,6 +76,7 @@ class _PIState extends State<PI> {
     }
   }
 
+  // App sends data to Pi
   Future<void> makePostRequest() async {
     try {
       final response = await http.post(
@@ -86,7 +84,7 @@ class _PIState extends State<PI> {
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({'key': 'value'}),
+        body: jsonEncode({'key': 'value1'}),
       );
 
       if (response.statusCode == 200) {
