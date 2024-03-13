@@ -26,6 +26,20 @@ class _BTState extends State<BT> {
   bool isDiscovering = false;
   late BluetoothConnection? _bluetoothConnection;
 
+  @override
+  void initState() {
+    super.initState();
+
+    _checkIsPaired().then((isPaired) {
+      if (!isPaired) {
+        developer.log("Not paired:", name: 'debug_bt');
+        _connectToDevice();
+      } else {
+        developer.log("Paired", name: 'debug_bt');
+      }
+    });
+  }
+
   Future<bool> _checkIsPaired() async {
     List<BluetoothDevice> devices = [];
     bool isPaired = false;
@@ -107,26 +121,55 @@ class _BTState extends State<BT> {
     }
   }
 
-  // Future<void> _readBluetoothSerial() async {
-  //   try {
-  //     _bluetoothConnection = await BluetoothConnection.toAddress(btAddress);
-  //     developer.log('Connected to the device');
+  Future<void> _readFromStream() async {
+    try {
+      _bluetoothConnection = await BluetoothConnection.toAddress(btAddress);
 
-  //     _bluetoothConnection?.input?.listen((Uint8List data) {
-  //       developer.log('Data incoming: ${ascii.decode(data)}');
-  //       _bluetoothConnection.output.add(data); // Sending data
+      _bluetoothConnection!.input!.listen((data) {
+        String receivedData = String.fromCharCodes(data);
+        developer.log("Received data from wearable device: $receivedData",
+            name: 'debug_bt');
+      }, onError: (e) {
+        developer.log("Error reading from stream: $e",
+            error: e, name: 'debug_bt');
+      }, onDone: () {
+        developer.log("Stream closed", name: 'debug_bt');
+      });
 
-  //       if (ascii.decode(data).contains('!')) {
-  //         _bluetoothConnection.finish(); // Closing connection
-  //         developer.log('Disconnecting by local request');
-  //       }
-  //     }).onDone(() {
-  //       developer.log('Disconnected by remote reques');
-  //     });
-  //   } catch (exception) {
-  //     developer.log('Cannot connect, exception occured');
-  //   }
-  // }
+      developer.log("Connected to wearable device", name: 'debug_bt');
+    } catch (e) {
+      developer.log("Error connecting to wearable device: $e",
+          error: e, name: 'debug_bt');
+    }
+  }
+
+  Future<void> _setupBluetoothConnection() async {
+    try {
+      if (_bluetoothConnection != null && _bluetoothConnection!.isConnected) {
+        developer.log('Already connected to the device');
+        return;
+      }
+
+      _bluetoothConnection = await BluetoothConnection.toAddress(btAddress);
+      developer.log('Connected to the device');
+
+      Timer(const Duration(seconds: 5), () {
+        if (_bluetoothConnection != null && _bluetoothConnection!.isConnected) {
+          _bluetoothConnection!.finish();
+          developer.log('Disconnected after 5 seconds');
+        }
+      });
+
+      _bluetoothConnection?.input?.listen((Uint8List data) {
+        developer.log('Data incoming: ${ascii.decode(data)}');
+        _bluetoothConnection?.output.add(data);
+      }).onDone(() {
+        developer.log('Disconnected by remote request');
+      });
+    } catch (exception) {
+      developer.log('Cannot connect, exception occurred $exception');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,10 +198,10 @@ class _BTState extends State<BT> {
               child: const Text('Connect to device'),
             ),
             const SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () => _readBluetoothSerial(),
-            //   child: const Text('Read Bluetooth Serial'),
-            // ),
+            ElevatedButton(
+              onPressed: () => _setupBluetoothConnection(),
+              child: const Text('Read Bluetooth Serial'),
+            ),
           ],
         ),
       ),
