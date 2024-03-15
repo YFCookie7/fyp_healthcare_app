@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_healthcare_app/registration_screen.dart';
+import 'package:fyp_healthcare_app/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:lottie/lottie.dart';
+import 'dart:developer' as developer;
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'dart:math';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
@@ -18,12 +22,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   Widget build(BuildContext context) {
     setFirstLaunchFlag(true);
-
-// Wearable Sleep Tracker: Seamless sleep tracking with our Wearable Sleep Tracker! Actively monitor your sleep on the go, ensuring you get the most accurate insights wherever life takes you.
-// Sleep Cycles: Tracks your sleep cycles, monitor and improves your sleeping habits
-// Sleep Score: Receive a personalized Sleep Score, tailored insights for optimal rest.
-// Smart Alarm: Wake up gently during your light sleep phase, ensuring you start your day feeling refreshed and ready to conquer your goals.
-// Handle your data: Store your sleep data safely..??
 
     final List<SubPages> pages = [
       SubPages(
@@ -120,9 +118,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             alignment: Alignment.topRight,
             child: TextButton(
               onPressed: () {
+                createProfile();
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => RegistrationScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()),
                   (route) => false,
                 );
               },
@@ -178,10 +178,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               ),
               child: TextButton(
                 onPressed: () {
+                  createProfile();
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const RegistrationScreen()),
+                        builder: (context) => const ProfileScreen()),
                     (route) => false,
                   );
                 },
@@ -202,6 +203,36 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   Future<void> setFirstLaunchFlag(bool flag) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('first_launch', flag);
+  }
+
+  Future<void> createProfile() async {
+    setFirstLaunchFlag(false);
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'profile.db');
+
+    developer.log("Database stored in $path", name: "debug.onboarding_screen");
+    Database database = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+      await db
+          .execute('CREATE TABLE User (id INTEGER PRIMARY KEY, username TEXT)');
+    });
+
+    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    final random = Random();
+    String result = '';
+
+    for (int i = 0; i < 5; i++) {
+      result += characters[random.nextInt(characters.length)];
+    }
+    String username = 'user_$result';
+
+    await database.transaction((txn) async {
+      int id1 =
+          await txn.rawInsert('INSERT INTO User(username) VALUES("$username")');
+      developer.log('Created a user record: $id1',
+          name: "debug.onboarding_screen");
+    });
+    await database.close();
   }
 }
 

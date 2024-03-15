@@ -12,22 +12,24 @@ class SplashScreen extends StatelessWidget {
     Future.delayed(const Duration(seconds: 3), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final bool? firstLaunch = prefs.getBool('first_launch');
-      // if (firstLaunch == null || firstLaunch == true) {
-      //   Navigator.pushAndRemoveUntil(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => const OnBoardingScreen()),
-      //   );
-      // } else {
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => const MenuScreen()),
-      //   );
-      // }
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const OnBoardingScreen()),
-        (route) => false,
-      );
+      if (firstLaunch == null || firstLaunch == true) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const OnBoardingScreen()),
+          (route) => false,
+        );
+      } else {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MenuScreen()),
+          (route) => false,
+        );
+      }
+      // Navigator.pushAndRemoveUntil(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => const OnBoardingScreen()),
+      //   (route) => false,
+      // );
     });
 
     return Scaffold(
