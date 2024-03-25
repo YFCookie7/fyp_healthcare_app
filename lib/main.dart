@@ -5,7 +5,7 @@ import 'package:fyp_healthcare_app/profile_screen.dart';
 import 'package:fyp_healthcare_app/data-comm/pi.dart';
 import 'package:fyp_healthcare_app/data-comm/bt.dart';
 import 'package:fyp_healthcare_app/data-comm/bt2.dart';
-import 'package:fyp_healthcare_app/menu_screen.dart';
+import 'package:fyp_healthcare_app/menu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 
@@ -34,7 +34,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
         // debugShowCheckedModeBanner: false,
-        home: MenuScreen());
+        home: Menu());
   }
 }
 

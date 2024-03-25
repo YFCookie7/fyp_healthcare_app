@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_healthcare_app/menu.dart';
 import 'package:fyp_healthcare_app/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:liquid_swipe/liquid_swipe.dart';
@@ -121,8 +122,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 createProfile();
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const ProfileScreen()),
+                  MaterialPageRoute(builder: (context) => const Menu()),
                   (route) => false,
                 );
               },
@@ -181,8 +181,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   createProfile();
                   Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfileScreen()),
+                    MaterialPageRoute(builder: (context) => const Menu()),
                     (route) => false,
                   );
                 },

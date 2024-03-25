@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_healthcare_app/menu_screen.dart';
+import 'package:fyp_healthcare_app/menu.dart';
 import 'package:fyp_healthcare_app/onboarding_screen.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,7 +21,7 @@ class SplashScreen extends StatelessWidget {
       } else {
         Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => const MenuScreen()),
+          MaterialPageRoute(builder: (context) => const Menu()),
           (route) => false,
         );
       }
