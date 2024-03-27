@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:fyp_healthcare_app/onboarding_screen.dart';
 import 'package:fyp_healthcare_app/splash_screen.dart';
 import 'package:fyp_healthcare_app/profile_screen.dart';
 import 'package:fyp_healthcare_app/data-comm/pi.dart';
@@ -34,7 +35,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
         // debugShowCheckedModeBanner: false,
-        home: Menu());
+        home: OnBoardingScreen());
   }
 }
 

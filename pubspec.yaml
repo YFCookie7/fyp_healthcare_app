@@ -24,6 +24,7 @@ dependencies:
   fluttertoast: 8.1.0
   flutter_blue_plus: ^1.31.16
   custom_navigation_bar: ^0.8.2
+  permission_handler: ^11.3.0
 
 dev_dependencies:
   flutter_test:

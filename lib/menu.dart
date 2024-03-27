@@ -14,7 +14,7 @@ class _MenuState extends State<Menu> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const BT2(),
+    const ProfileScreen(),
     const BT2(),
     const BT2(),
     const BT2(),

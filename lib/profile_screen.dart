@@ -154,52 +154,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: SingleChildScrollView(
-            child: Column(children: [
-      const SizedBox(height: 150.0),
-      Image.asset('assets/icon/avatar.png', width: 130, height: 130),
-      // const SizedBox(height: 10.0),
-      // Text(
-      //   'Welcome, $username_textbox',
-      //   style: const TextStyle(
-      //     fontSize: 20,
-      //     color: Colors.blue,
-      //   ),
-      // ),
-      Padding(
-        padding: const EdgeInsets.all(50.0),
-        child: TextField(
-          controller: _textFieldController,
-          decoration: const InputDecoration(
-            labelStyle: TextStyle(color: Colors.blue),
-            prefixIcon: Icon(
-              Icons.person,
-              color: Colors.red,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(70.0),
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: <Color>[Colors.blue, Colors.purple],
+              ),
+            ),
+            child: const AppBarContent(),
+          ),
+        ),
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/background/splash_background.jpg'),
+              fit: BoxFit.cover,
             ),
           ),
-          style: const TextStyle(color: Colors.black),
-        ),
-      ),
-      ElevatedButton(
-        onPressed: () {
-          updateUsername(_textFieldController.text);
-        },
-        child: const Text('Update name'),
-      ),
-      const SizedBox(height: 20.0),
-      ElevatedButton(
-        onPressed: () {
-          exportProfile();
-        },
-        child: const Text('Export Profile'),
-      ),
-      const SizedBox(height: 20.0),
-      ElevatedButton(
-        onPressed: () {
-          importProfile();
-        },
-        child: const Text('Import Profile'),
-      ),
-    ])));
+          child: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 80.0),
+                Text(
+                  'Profile',
+                ),
+                SizedBox(height: 10.0),
+              ],
+            ),
+          ),
+        ));
   }
 }
+
+class AppBarContent extends StatelessWidget {
+  const AppBarContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        SizedBox(height: 20),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            children: <Widget>[
+              const Text(
+                'Profile',
+                style: TextStyle(
+                  fontFamily: 'PatuaOne',
+                  fontSize: 30,
+                  color: Colors.white,
+                ),
+              ),
+              const Spacer(),
+              IconButton(
+                icon: const Icon(
+                  Icons.settings,
+                  size: 25,
+                ),
+                color: Colors.white,
+                onPressed: () {},
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Scaffold(
+  //       body: SingleChildScrollView(
+  //           child: Column(children: [
+  //     const SizedBox(height: 150.0),
+  //     Image.asset('assets/icon/avatar.png', width: 130, height: 130),
+  //     Padding(
+  //       padding: const EdgeInsets.all(50.0),
+  //       child: TextField(
+  //         controller: _textFieldController,
+  //         decoration: const InputDecoration(
+  //           labelStyle: TextStyle(color: Colors.blue),
+  //           prefixIcon: Icon(
+  //             Icons.person,
+  //             color: Colors.red,
+  //           ),
+  //         ),
+  //         style: const TextStyle(color: Colors.black),
+  //       ),
+  //     ),
+  //     ElevatedButton(
+  //       onPressed: () {
+  //         updateUsername(_textFieldController.text);
+  //       },
+  //       child: const Text('Update name'),
+  //     ),
+  //     const SizedBox(height: 20.0),
+  //     ElevatedButton(
+  //       onPressed: () {
+  //         exportProfile();
+  //       },
+  //       child: const Text('Export Profile'),
+  //     ),
+  //     const SizedBox(height: 20.0),
+  //     ElevatedButton(
+  //       onPressed: () {
+  //         importProfile();
+  //       },
+  //       child: const Text('Import Profile'),
+  //     ),
+  //   ])));
+  // }
+

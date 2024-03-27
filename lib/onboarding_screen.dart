@@ -8,6 +8,7 @@ import 'package:lottie/lottie.dart';
 import 'dart:developer' as developer;
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:math';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -27,42 +28,42 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     final List<SubPages> pages = [
       SubPages(
         backgroundPath: 'assets/background/onboarding_p1.jpg',
-        lottiePath: 'assets/lottie/onboarding_lottie_3.json',
-        title: 'Sleep Cycle',
-        description:
-            'Dive into the realm of improved sleep habits as we meticulously track your sleep cycles. Understand, monitor, and elevate your nightly rejuvenation.',
-        isLastPage: false,
-      ),
-      SubPages(
-        backgroundPath: 'assets/background/onboarding_p2.jpg',
         lottiePath: 'assets/lottie/onboarding_lottie_1.json',
-        title: 'Wearable Sleep Tracker',
+        title: 'Monitor your biosignal',
         description:
-            'Seamlessly track your sleep with our Wearable Sleep Tracker. Effortlessly monitor your sleep on the go, ensuring precise insights no matter where life takes you.',
-        isLastPage: false,
-      ),
-      SubPages(
-        backgroundPath: 'assets/background/onboarding_p1.jpg',
-        lottiePath: 'assets/lottie/onboarding_lottie_4.json',
-        title: 'Sleep Score',
-        description:
-            'Experience a tailored journey with your very own Sleep Score. Receive personalized insights for optimal rest, guiding you towards a world of peaceful slumber.',
+            'By pairing with the wearable watch, you can monitor your real-time biosignal such as heart rate, body temperature, and spo2.',
         isLastPage: false,
       ),
       SubPages(
         backgroundPath: 'assets/background/onboarding_p2.jpg',
-        lottiePath: 'assets/lottie/onboarding_lottie_2.json',
-        title: 'Smart Alarm',
+        lottiePath: 'assets/lottie/onboarding_lottie_3.json',
+        title: 'Evaulate your sleep quality',
         description:
-            'Awaken gently during your light sleep phase, ensuring you start each day refreshed and prepared to conquer your goals. Say goodbye to groggy mornings!',
+            'Evaluate your sleep quality by analysing your biosignals and sleep stages. Receive useful feedback with a detailed report and sleep score',
         isLastPage: false,
       ),
       SubPages(
         backgroundPath: 'assets/background/onboarding_p1.jpg',
-        lottiePath: 'assets/lottie/onboarding_lottie_5.json',
-        title: 'Handle your data',
+        lottiePath: 'assets/lottie/onboarding_lottie_2.json',
+        title: 'Smart alarm clock',
         description:
-            'Your data is encrypted and stored safely. We ensure that your sleep data is secure and private. No network connection required.',
+            'Sleep tracker can track your sleep cycle and wake you up at the optimal time so you feel refreshed and energized.',
+        isLastPage: false,
+      ),
+      SubPages(
+        backgroundPath: 'assets/background/onboarding_p2.jpg',
+        lottiePath: 'assets/lottie/onboarding_lottie_5.json',
+        title: 'Secured data management',
+        description:
+            'Your data is stored locally with highest security. You can safely import/export your data with encrypted file.',
+        isLastPage: false,
+      ),
+      SubPages(
+        backgroundPath: 'assets/background/onboarding_p1.jpg',
+        lottiePath: 'assets/lottie/onboarding_lottie_6.json',
+        title: 'Permission is required',
+        description:
+            'This app requires bluetooth permission to fully access the app features!',
         isLastPage: true,
       ),
     ];
@@ -118,13 +119,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           Align(
             alignment: Alignment.topRight,
             child: TextButton(
-              onPressed: () {
+              onPressed: () async {
+                grantPermission();
                 createProfile();
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const Menu()),
                   (route) => false,
                 );
+                ;
               },
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -148,22 +151,26 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             height: 260,
           ),
           const SizedBox(height: 25),
-          Text(
-            page.title,
-            style: const TextStyle(
-              fontFamily: 'PatuaOne',
-              fontSize: 34,
-              color: Colors.black,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Text(
+              page.title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'PatuaOne',
+                fontSize: 34,
+                color: Color.fromARGB(255, 69, 66, 204),
+              ),
             ),
           ),
-          const SizedBox(height: 25),
+          const SizedBox(height: 35),
           SizedBox(
             width: 300,
             child: Text(
               page.description,
               style: const TextStyle(
                 fontSize: 16,
-                color: Colors.white,
+                color: Color.fromARGB(255, 69, 66, 204),
               ),
               textAlign: TextAlign.justify,
             ),
@@ -178,6 +185,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               ),
               child: TextButton(
                 onPressed: () {
+                  grantPermission();
                   createProfile();
                   Navigator.pushAndRemoveUntil(
                     context,
@@ -186,7 +194,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   );
                 },
                 child: const Text(
-                  'Get Started',
+                  'Grant permission ',
                   style: TextStyle(
                     fontSize: 18,
                     color: Colors.white,
@@ -202,6 +210,16 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   Future<void> setFirstLaunchFlag(bool flag) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('first_launch', flag);
+  }
+
+  Future<void> grantPermission() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.location,
+      Permission.storage,
+      Permission.accessMediaLocation,
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan,
+    ].request();
   }
 
   Future<void> createProfile() async {
