@@ -1,6 +1,6 @@
 import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,6 +10,8 @@ import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:encrypt/encrypt.dart' as encrypter;
+import 'package:fyp_healthcare_app/setting_screen.dart';
+import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -154,120 +156,180 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(70.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: <Color>[Colors.blue, Colors.purple],
+      backgroundColor: Colors.grey.withOpacity(0.15),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          Container(
+            margin: const EdgeInsets.only(right: 10, top: 0),
+            child: IconButton(
+              icon: const Icon(Icons.settings, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => (const SettingScreen())));
+              },
+            ),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(0),
+        child: Column(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/background/splash_background.jpg'),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 90),
+                  Image.asset(
+                    'assets/icon/avatar.png',
+                    height: 140,
+                    width: 140,
+                  ),
+                  const SizedBox(height: 15),
+                  SizedBox(
+                    width: 200.0,
+                    child: TextField(
+                      controller: _textFieldController,
+                      // decoration: const InputDecoration(
+                      //   suffixIcon: Icon(Icons.edit),
+                      // ),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 17.0, height: 1, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ],
               ),
             ),
-            child: const AppBarContent(),
-          ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: ListView(
+                  padding: const EdgeInsets.only(top: 10),
+                  children: [
+                    SettingsGroup(
+                      iconItemSize: 20,
+                      items: [
+                        SettingsItem(
+                          onTap: () {
+                            developer.log("import profile pressed",
+                                name: "debug.profile");
+                          },
+                          icons: Icons.input_rounded,
+                          iconStyle: IconStyle(backgroundColor: Colors.green),
+                          title: 'Import profile',
+                        ),
+                        SettingsItem(
+                          onTap: () {},
+                          icons: Icons.output_rounded,
+                          iconStyle: IconStyle(backgroundColor: Colors.green),
+                          title: 'Export profile',
+                        ),
+                      ],
+                    ),
+                    SettingsGroup(
+                      iconItemSize: 20,
+                      items: [
+                        SettingsItem(
+                          onTap: () {},
+                          icons: Icons.info_rounded,
+                          iconStyle: IconStyle(
+                            backgroundColor: Colors.blue,
+                          ),
+                          title: 'About',
+                          subtitle: "Learn more about this app",
+                        ),
+                      ],
+                    ),
+                    SettingsGroup(
+                      iconItemSize: 30,
+                      settingsGroupTitle: "Account",
+                      items: [
+                        SettingsItem(
+                          onTap: () => showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Reset profile'),
+                              content: const Text(
+                                  'All sleep data include statistics and readings will be reset. Are you sure you want to reset your profile?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, 'Cancel'),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // delete profile
+                                    Navigator.pop(context, 'Cancel');
+                                  },
+                                  child: const Text('Comfirm'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          icons: Icons.restore,
+                          title: "Reset profile",
+                          titleStyle: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SettingsItem(
+                          onTap: () => showDialog<String>(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              title: const Text('Delete profile'),
+                              content: const Text(
+                                  'All sleep data include statistics and readings will be deleted. Are you sure you want to delete your profile?'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, 'Cancel'),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // delete profile
+                                    Navigator.pop(context, 'Cancel');
+                                  },
+                                  child: const Text('Comfirm'),
+                                ),
+                              ],
+                            ),
+                          ),
+                          icons: Icons.delete_forever_rounded,
+                          title: "Delete profile",
+                          titleStyle: const TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-        body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/background/splash_background.jpg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: 80.0),
-                Text(
-                  'Profile',
-                ),
-                SizedBox(height: 10.0),
-              ],
-            ),
-          ),
-        ));
-  }
-}
-
-class AppBarContent extends StatelessWidget {
-  const AppBarContent({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: <Widget>[
-        SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Row(
-            children: <Widget>[
-              const Text(
-                'Profile',
-                style: TextStyle(
-                  fontFamily: 'PatuaOne',
-                  fontSize: 30,
-                  color: Colors.white,
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                icon: const Icon(
-                  Icons.settings,
-                  size: 25,
-                ),
-                color: Colors.white,
-                onPressed: () {},
-              ),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
-
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //       body: SingleChildScrollView(
-  //           child: Column(children: [
-  //     const SizedBox(height: 150.0),
-  //     Image.asset('assets/icon/avatar.png', width: 130, height: 130),
-  //     Padding(
-  //       padding: const EdgeInsets.all(50.0),
-  //       child: TextField(
-  //         controller: _textFieldController,
-  //         decoration: const InputDecoration(
-  //           labelStyle: TextStyle(color: Colors.blue),
-  //           prefixIcon: Icon(
-  //             Icons.person,
-  //             color: Colors.red,
-  //           ),
-  //         ),
-  //         style: const TextStyle(color: Colors.black),
-  //       ),
-  //     ),
-  //     ElevatedButton(
-  //       onPressed: () {
-  //         updateUsername(_textFieldController.text);
-  //       },
-  //       child: const Text('Update name'),
-  //     ),
-  //     const SizedBox(height: 20.0),
-  //     ElevatedButton(
-  //       onPressed: () {
-  //         exportProfile();
-  //       },
-  //       child: const Text('Export Profile'),
-  //     ),
-  //     const SizedBox(height: 20.0),
-  //     ElevatedButton(
-  //       onPressed: () {
-  //         importProfile();
-  //       },
-  //       child: const Text('Import Profile'),
-  //     ),
-  //   ])));
-  // }
-

@@ -25,45 +25,54 @@ class _MenuState extends State<Menu> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _screens[_currentIndex],
-      bottomNavigationBar: CustomNavigationBar(
-        scaleFactor: 0.5,
-        // elevation: 10,
-        items: [
-          CustomNavigationBarItem(
-            icon: const Icon(Icons.home),
-          ),
-          CustomNavigationBarItem(
-            icon: const Icon(Icons.analytics_outlined),
-          ),
-          CustomNavigationBarItem(
-            icon: const Icon(Icons.nights_stay_outlined),
-            badgeCount: 2,
-            showBadge: true,
-          ),
-          CustomNavigationBarItem(
-            icon: const Icon(Icons.alarm_outlined),
-          ),
-          CustomNavigationBarItem(
-            icon: const Icon(Icons.account_circle),
-            badgeCount: 5,
-            showBadge: true,
-          ),
-        ],
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        currentIndex: _currentIndex,
-        iconSize: 32.0,
-        selectedColor: Color(0xff0c18fb),
-        unSelectedColor: Colors.black,
-        backgroundColor: Color.fromARGB(186, 255, 255, 255),
-        strokeColor: Color(0x300c18fb),
-        // borderRadius: Radius.circular(20),
-        isFloating: false,
-        blurEffect: true,
-        opacity: 0.8,
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(
+              top: BorderSide(
+                  color: Color.fromARGB(255, 61, 59, 59), width: 0.2)),
+        ),
+        child: CustomNavigationBar(
+          scaleFactor: 0.5,
+          // elevation: 10,
+          items: [
+            CustomNavigationBarItem(
+              icon: const Icon(Icons.home),
+            ),
+            CustomNavigationBarItem(
+              icon: const Icon(Icons.analytics_outlined),
+            ),
+            CustomNavigationBarItem(
+              icon: const Icon(Icons.nights_stay_outlined),
+              badgeCount: 2,
+              showBadge: true,
+            ),
+            CustomNavigationBarItem(
+              icon: const Icon(Icons.alarm_outlined),
+            ),
+            CustomNavigationBarItem(
+              icon: const Icon(Icons.account_circle),
+              badgeCount: 5,
+              showBadge: true,
+            ),
+          ],
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+          currentIndex: _currentIndex,
+          iconSize: 32.0,
+          selectedColor: Color(0xff0c18fb),
+          unSelectedColor: Colors.black,
+          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          // backgroundColor: Color.fromARGB(183, 255, 255, 255),
+          strokeColor: Color(0x300c18fb),
+          // borderRadius: Radius.circular(20),
+          isFloating: false,
+          blurEffect: true,
+          opacity: 0.8,
+        ),
       ),
     );
   }
