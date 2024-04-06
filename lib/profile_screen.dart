@@ -203,14 +203,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   const SizedBox(height: 15),
                   SizedBox(
                     width: 200.0,
-                    child: TextField(
-                      controller: _textFieldController,
-                      // decoration: const InputDecoration(
-                      //   suffixIcon: Icon(Icons.edit),
-                      // ),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 17.0, height: 1, color: Colors.white),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _textFieldController,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                                fontSize: 17.0, height: 1, color: Colors.white),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.white),
+                          onPressed: () {
+                            developer.log(_textFieldController.text,
+                                name: "debug.profile");
+                            updateUsername(_textFieldController.text);
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -230,13 +241,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           onTap: () {
                             developer.log("import profile pressed",
                                 name: "debug.profile");
+                            importProfile();
                           },
                           icons: Icons.input_rounded,
                           iconStyle: IconStyle(backgroundColor: Colors.green),
                           title: 'Import profile',
                         ),
                         SettingsItem(
-                          onTap: () {},
+                          onTap: () {
+                            exportProfile();
+                          },
                           icons: Icons.output_rounded,
                           iconStyle: IconStyle(backgroundColor: Colors.green),
                           title: 'Export profile',
