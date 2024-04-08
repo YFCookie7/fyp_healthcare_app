@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:fyp_healthcare_app/data-comm/bt2.dart';
+import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'package:fyp_healthcare_app/onboarding_screen.dart';
 import 'package:fyp_healthcare_app/splash_screen.dart';
 import 'package:fyp_healthcare_app/menu.dart';
-import 'package:fyp_healthcare_app/device_watch_screen.dart';
+import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 

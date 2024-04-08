@@ -4,14 +4,14 @@ import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class PI extends StatefulWidget {
-  const PI({Key? key}) : super(key: key);
+class PiTemplate extends StatefulWidget {
+  const PiTemplate({Key? key}) : super(key: key);
 
   @override
-  _PIState createState() => _PIState();
+  _PiTemplateState createState() => _PiTemplateState();
 }
 
-class _PIState extends State<PI> {
+class _PiTemplateState extends State<PiTemplate> {
   late final String piAddress;
   static const String apiUrl = 'http://192.168.1.109:5000';
   String textbox = 'Hi';

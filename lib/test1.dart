@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'dart:math';
-import 'package:fyp_healthcare_app/data-comm/bt2.dart';
+import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'dart:developer' as developer;
 import 'package:fyp_healthcare_app/device_panel_screen.dart';
 
-class Dummy1Screen extends StatefulWidget {
-  const Dummy1Screen({Key? key}) : super(key: key);
+class Test1 extends StatefulWidget {
+  const Test1({Key? key}) : super(key: key);
 
   @override
-  _Dummy1ScreenState createState() => _Dummy1ScreenState();
+  _Test1State createState() => _Test1State();
 }
 
-class _Dummy1ScreenState extends State<Dummy1Screen> {
+class _Test1State extends State<Test1> {
   String receivedData = '';
 
   @override
   void initState() {
     super.initState();
-    BluetoothBLE.onDataReceived = _handleDataReceived;
+    BluetoothBLE.registerCallback(_handleDataReceived);
     BluetoothBLE.connectToDevice();
   }
 
   @override
   void dispose() {
+    BluetoothBLE.unregisterCallback(_handleDataReceived);
     BluetoothBLE.disconnectedDevice();
-    BluetoothBLE.onDataReceived = null;
     super.dispose();
   }
 
   void _handleDataReceived(String data) {
     setState(() {
       receivedData = data;
-      developer.log(data, name: 'debug.device_watch');
+      developer.log(data, name: 'debug.test1');
     });
   }
 
@@ -40,7 +40,7 @@ class _Dummy1ScreenState extends State<Dummy1Screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wearable Device'),
+        title: const Text('Test 1'),
       ),
       body: Center(
         child: Column(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fyp_healthcare_app/data-comm/bt2.dart';
+import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'package:fyp_healthcare_app/profile_screen.dart';
 import 'package:fyp_healthcare_app/home_screen.dart';
 import 'package:fyp_healthcare_app/device_screen.dart';
@@ -7,8 +7,8 @@ import 'package:custom_navigation_bar/custom_navigation_bar.dart';
 
 import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'package:fyp_healthcare_app/device_panel_screen.dart';
-import 'package:fyp_healthcare_app/dummy1.dart';
-import 'package:fyp_healthcare_app/device_watch_screen.dart';
+import 'package:fyp_healthcare_app/test1.dart';
+import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 
 class Menu extends StatefulWidget {
   const Menu({Key? key}) : super(key: key);
@@ -22,8 +22,8 @@ class _MenuState extends State<Menu> {
 
   final List<Widget> _screens = [
     const WearableDeviceScreen(),
-    const Dummy1Screen(),
-    const BT2(),
+    const Test1(),
+    const BtTemplate(),
     const ProfileScreen(),
   ];
 

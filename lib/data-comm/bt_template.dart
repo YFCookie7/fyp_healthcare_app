@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-class BT2 extends StatefulWidget {
-  const BT2({Key? key}) : super(key: key);
+class BtTemplate extends StatefulWidget {
+  const BtTemplate({Key? key}) : super(key: key);
 
   @override
-  _BT2State createState() => _BT2State();
+  _BtTemplateState createState() => _BtTemplateState();
 }
 
-class _BT2State extends State<BT2> {
+class _BtTemplateState extends State<BtTemplate> {
   final String deviceName = "HMSoft";
   final String deviceAddress = "C8:FD:19:91:1B:65";
   String textbox = 'Hi';

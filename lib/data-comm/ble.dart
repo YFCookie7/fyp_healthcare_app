@@ -15,15 +15,24 @@ class BluetoothBLE {
   static List<StreamSubscription<List<int>>> _characteristicSubscriptions = [];
 
   static DataReceivedCallback? onDataReceived;
+  static List<DataReceivedCallback> callbacks_list = [];
+
+  static void registerCallback(DataReceivedCallback callback) {
+    callbacks_list.add(callback);
+  }
+
+  static void unregisterCallback(DataReceivedCallback callback) {
+    callbacks_list.remove(callback);
+  }
 
   // Check connection state
   static Future<void> getConnectedState() async {
     List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
     if (devs.isEmpty) {
-      developer.log("Not connected to wearable device", name: 'debug_bt2');
+      developer.log("Not connected to wearable device", name: 'debug.ble');
       return;
     } else {
-      developer.log("Already connected to wearable device", name: 'debug_bt2');
+      developer.log("Already connected to wearable device", name: 'debug.ble');
     }
   }
 
@@ -39,30 +48,30 @@ class BluetoothBLE {
             found = true;
             developer.log(
                 '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
-                name: 'debug_bt2');
+                name: 'debug.ble');
 
             _device = r.device;
             FlutterBluePlus.stopScan();
 
             _connectionSubscription = _device.connectionState
                 .listen((BluetoothConnectionState state) async {
-              developer.log("Connection state: $state", name: 'debug_bt2');
+              developer.log("Connection state: $state", name: 'debug.ble');
               if (state == BluetoothConnectionState.connected) {
                 developer.log("Connected. Start reading data.",
-                    name: 'debug_bt2');
+                    name: 'debug.ble');
                 await readDataStream();
               } else if (state == BluetoothConnectionState.disconnected) {
-                developer.log("Disconnected, reconnecting", name: 'debug_bt2');
+                developer.log("Disconnected, reconnecting", name: 'debug.ble');
                 await _device.connect();
               }
             });
           }
         }
       },
-      onError: (e) => developer.log(e.toString(), name: 'debug_bt2'),
+      onError: (e) => developer.log(e.toString(), name: 'debug.ble'),
     );
     if (!found) {
-      developer.log("Device not found", name: 'debug_bt2');
+      developer.log("Device not found", name: 'debug.ble');
     }
 
     FlutterBluePlus.cancelWhenScanComplete(subscription);
@@ -90,7 +99,7 @@ class BluetoothBLE {
     }
     _characteristicSubscriptions.clear();
     _device.disconnect();
-    developer.log("Connection closed", name: 'debug_bt2');
+    developer.log("Connection closed", name: 'debug.ble');
   }
 
   // Read data from the device
@@ -103,9 +112,12 @@ class BluetoothBLE {
             String stringValue = String.fromCharCodes(value);
             developer.log(
                 "Received data: $stringValue ${Random().nextInt(1000)}",
-                name: 'debug_bt2');
+                name: 'debug.ble');
             // invoke data callback
-            onDataReceived?.call(stringValue);
+            // onDataReceived?.call(stringValue);
+            for (var callback in callbacks_list) {
+              callback(stringValue);
+            }
           });
 
           _device.cancelWhenDisconnected(subscription);
@@ -126,7 +138,7 @@ class BluetoothBLE {
         if (characteristic.properties.writeWithoutResponse &&
             characteristic.properties.write) {
           List<int> bytes = utf8.encode(message);
-          developer.log("Sending data: $message", name: 'debug_bt2');
+          developer.log("Sending data: $message", name: 'debug.ble');
 
           await characteristic.write(bytes);
         }

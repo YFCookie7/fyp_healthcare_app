@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'dart:math';
-import 'package:fyp_healthcare_app/data-comm/bt2.dart';
+import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'dart:developer' as developer;
 import 'package:fyp_healthcare_app/device_panel_screen.dart';
 
@@ -18,14 +18,14 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   @override
   void initState() {
     super.initState();
-    BluetoothBLE.onDataReceived = _handleDataReceived;
+    BluetoothBLE.registerCallback(_handleDataReceived);
     BluetoothBLE.connectToDevice();
   }
 
   @override
   void dispose() {
+    BluetoothBLE.unregisterCallback(_handleDataReceived);
     BluetoothBLE.disconnectedDevice();
-    BluetoothBLE.onDataReceived = null;
     super.dispose();
   }
 
@@ -33,6 +33,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
     setState(() {
       receivedData = data;
       developer.log(data, name: 'debug.device_watch');
+      BluetoothBLE.sendMessage("!Hi_${Random().nextInt(1000).toString()}_%;");
     });
   }
 
