@@ -175,7 +175,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               textAlign: TextAlign.justify,
             ),
           ),
-          if (page.isLastPage) const SizedBox(height: 55),
+          if (page.isLastPage) const SizedBox(height: 45),
           if (page.isLastPage)
             Container(
               width: 200,

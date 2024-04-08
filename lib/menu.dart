@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_healthcare_app/data-comm/bt2.dart';
 import 'package:fyp_healthcare_app/profile_screen.dart';
+import 'package:fyp_healthcare_app/home_screen.dart';
+import 'package:fyp_healthcare_app/device_screen.dart';
 import 'package:custom_navigation_bar/custom_navigation_bar.dart';
+
+import 'package:fyp_healthcare_app/data-comm/ble.dart';
+import 'package:fyp_healthcare_app/device_panel_screen.dart';
+import 'package:fyp_healthcare_app/dummy1.dart';
+import 'package:fyp_healthcare_app/device_watch_screen.dart';
 
 class Menu extends StatefulWidget {
   const Menu({Key? key}) : super(key: key);
@@ -14,9 +21,8 @@ class _MenuState extends State<Menu> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const ProfileScreen(),
-    const BT2(),
-    const BT2(),
+    const WearableDeviceScreen(),
+    const Dummy1Screen(),
     const BT2(),
     const ProfileScreen(),
   ];
@@ -26,6 +32,7 @@ class _MenuState extends State<Menu> {
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: Container(
+        height: 65,
         decoration: const BoxDecoration(
           color: Colors.white,
           border: Border(
@@ -38,20 +45,21 @@ class _MenuState extends State<Menu> {
           items: [
             CustomNavigationBarItem(
               icon: const Icon(Icons.home),
+              title: const Text("Home"),
             ),
             CustomNavigationBarItem(
-              icon: const Icon(Icons.analytics_outlined),
+              icon: const Icon(Icons.devices_other),
+              title: const Text("Device"),
             ),
             CustomNavigationBarItem(
               icon: const Icon(Icons.nights_stay_outlined),
+              title: const Text("Alarm"),
               badgeCount: 2,
               showBadge: true,
             ),
             CustomNavigationBarItem(
-              icon: const Icon(Icons.alarm_outlined),
-            ),
-            CustomNavigationBarItem(
               icon: const Icon(Icons.account_circle),
+              title: const Text("Profile"),
               badgeCount: 5,
               showBadge: true,
             ),

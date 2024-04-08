@@ -26,6 +26,9 @@ dependencies:
   custom_navigation_bar: ^0.8.2
   permission_handler: ^11.3.0
   babstrap_settings_screen: 0.1.6
+  syncfusion_flutter_gauges: ^25.1.38
+  glassmorphism: ^3.0.0
+  giffy_dialog: ^2.1.0
 
 
 dev_dependencies:
@@ -47,6 +50,7 @@ flutter:
     - assets/background/
     - assets/icon/
     - assets/lottie/
+    - assets/gif/
   fonts:
     - family: ProtestRiot
       fonts:

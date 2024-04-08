@@ -1,67 +1,39 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:math';
-import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
+import 'dart:convert';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'dart:math';
 
-class BT2 extends StatefulWidget {
-  const BT2({Key? key}) : super(key: key);
+typedef DataReceivedCallback = void Function(String data);
 
-  @override
-  _BT2State createState() => _BT2State();
-}
+class BluetoothBLE {
+  static const String deviceName = "HMSoft";
+  static const String deviceAddress = "C8:FD:19:91:1B:65";
+  static late BluetoothDevice _device;
+  static late StreamSubscription<BluetoothConnectionState>?
+      _connectionSubscription;
+  static List<StreamSubscription<List<int>>> _characteristicSubscriptions = [];
 
-class _BT2State extends State<BT2> {
-  final String deviceName = "HMSoft";
-  final String deviceAddress = "C8:FD:19:91:1B:65";
-  String textbox = 'Hi';
-  late BluetoothDevice _device;
-  StreamSubscription<BluetoothConnectionState>? _connectionSubscription;
-  List<StreamSubscription<List<int>>> _characteristicSubscriptions = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
-  }
-
-  @override
-  void dispose() {
-    // 1. connect, disconnect, repeat
-    // 2. connect, pop back, repeat
-    // 3. connect, disconnect, pop back, repeat
-
-    _disconnectedDevice();
-    super.dispose();
-  }
+  static DataReceivedCallback? onDataReceived;
 
   // Check connection state
-  Future<void> _getConnectedState() async {
+  static Future<void> getConnectedState() async {
     List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
     if (devs.isEmpty) {
-      setState(() {
-        textbox = "Not connected to wearable device ${Random().nextInt(1000)}";
-      });
       developer.log("Not connected to wearable device", name: 'debug_bt2');
       return;
     } else {
-      setState(() {
-        textbox =
-            "Already connected to wearable device ${Random().nextInt(1000)}";
-      });
       developer.log("Already connected to wearable device", name: 'debug_bt2');
     }
   }
 
   // Connect to the device
-  Future<void> _connectToDevice() async {
+  static Future<void> connectToDevice() async {
     bool found = false;
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
-          ScanResult r = results.last; // the most recently found device
+          ScanResult r = results.last;
 
           if (r.device.remoteId.toString() == deviceAddress) {
             found = true;
@@ -69,9 +41,6 @@ class _BT2State extends State<BT2> {
                 '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
                 name: 'debug_bt2');
 
-            setState(() {
-              textbox = "Device found! ${Random().nextInt(1000)}";
-            });
             _device = r.device;
             FlutterBluePlus.stopScan();
 
@@ -81,7 +50,7 @@ class _BT2State extends State<BT2> {
               if (state == BluetoothConnectionState.connected) {
                 developer.log("Connected. Start reading data.",
                     name: 'debug_bt2');
-                await _readDataStream();
+                await readDataStream();
               } else if (state == BluetoothConnectionState.disconnected) {
                 developer.log("Disconnected, reconnecting", name: 'debug_bt2');
                 await _device.connect();
@@ -93,9 +62,6 @@ class _BT2State extends State<BT2> {
       onError: (e) => developer.log(e.toString(), name: 'debug_bt2'),
     );
     if (!found) {
-      setState(() {
-        textbox = "Device not found! ${Random().nextInt(1000)}";
-      });
       developer.log("Device not found", name: 'debug_bt2');
     }
 
@@ -117,7 +83,7 @@ class _BT2State extends State<BT2> {
   }
 
   // Disconnect from the device
-  Future<void> _disconnectedDevice() async {
+  static Future<void> disconnectedDevice() async {
     _connectionSubscription?.cancel();
     for (var subscription in _characteristicSubscriptions) {
       subscription.cancel();
@@ -128,19 +94,18 @@ class _BT2State extends State<BT2> {
   }
 
   // Read data from the device
-  Future<void> _readDataStream() async {
+  static Future<void> readDataStream() async {
     List<BluetoothService> services = await _device.discoverServices();
     for (BluetoothService service in services) {
       for (BluetoothCharacteristic characteristic in service.characteristics) {
         if (characteristic.properties.read) {
           final subscription = characteristic.onValueReceived.listen((value) {
             String stringValue = String.fromCharCodes(value);
-            setState(() {
-              textbox = "$stringValue  ${Random().nextInt(1000)}";
-            });
             developer.log(
                 "Received data: $stringValue ${Random().nextInt(1000)}",
                 name: 'debug_bt2');
+            // invoke data callback
+            onDataReceived?.call(stringValue);
           });
 
           _device.cancelWhenDisconnected(subscription);
@@ -153,7 +118,7 @@ class _BT2State extends State<BT2> {
   }
 
   // Send data to the device
-  Future<void> _sendMessage(String message) async {
+  static Future<void> sendMessage(String message) async {
     // uuid: 0000ffe1-0000-1000-8000-00805f9b34fb
     List<BluetoothService> services = await _device.discoverServices();
     for (BluetoothService service in services) {
@@ -167,43 +132,5 @@ class _BT2State extends State<BT2> {
         }
       }
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              textbox,
-              style: const TextStyle(fontSize: 20),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _connectToDevice(),
-              child: const Text('Connect to device'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _getConnectedState(),
-              child: const Text('Get connected device'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _disconnectedDevice(),
-              child: const Text('Disonnected device'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () =>
-                  _sendMessage("!Hi_${Random().nextInt(1000).toString()}_%;"),
-              child: const Text('Write Sth to device'),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
