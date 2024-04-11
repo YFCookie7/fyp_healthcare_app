@@ -7,6 +7,7 @@ import 'package:fyp_healthcare_app/menu.dart';
 import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +32,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(debugShowCheckedModeBanner: false, home: Menu());
+    return const MaterialApp(
+        debugShowCheckedModeBanner: false, home: SplashScreen());
   }
 }
 

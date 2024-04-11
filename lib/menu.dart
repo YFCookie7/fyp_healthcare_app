@@ -21,7 +21,7 @@ class _MenuState extends State<Menu> {
   int _currentIndex = 0;
 
   final List<Widget> _screens = [
-    const WearableDeviceScreen(),
+    const DeviceScreen(),
     const Test1(),
     const BtTemplate(),
     const ProfileScreen(),

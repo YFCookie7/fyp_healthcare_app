@@ -38,13 +38,14 @@ class BluetoothBLE {
 
   // Connect to the device
   static Future<void> connectToDevice() async {
+    FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
     bool found = false;
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
           ScanResult r = results.last;
 
-          if (r.device.remoteId.toString() == deviceAddress) {
+          if (r.advertisementData.advName.toString() == deviceName) {
             found = true;
             developer.log(
                 '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
@@ -84,8 +85,8 @@ class BluetoothBLE {
         .first;
 
     await FlutterBluePlus.startScan(
-        withServices: [Guid("180D")],
-        withNames: ["HMSoft"],
+        // withServices: [Guid("180D")],
+        // withNames: ["HMSoft"],
         timeout: const Duration(seconds: 5));
 
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
