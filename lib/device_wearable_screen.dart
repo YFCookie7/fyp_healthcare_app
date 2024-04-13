@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'dart:math';
@@ -15,13 +17,43 @@ class WearableDeviceScreen extends StatefulWidget {
 class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   String receivedData = '';
 
+  String titleText = "Connecting to device";
+  String redText = "redText";
+  String irText = "irText";
+  String tempAText = "tempAText";
+  String tempOText = "tempOText";
+  String gyroXText = "gyroXText";
+  String gyroYText = "gyroYText";
+  String gyroZText = "gyroZText";
+
   @override
-  void initState() {
+  Future<void> initState() async {
     super.initState();
     BluetoothBLE.registerCallback(_handleDataReceived);
-    BluetoothBLE.connectToDevice();
-  }
+    titleText = await BluetoothBLE.connectToDevice();
 
+    /*
+    if(await BluetoothBLE.isConnected())
+    {
+      await BluetoothBLE.readDataStream();
+    }
+    */
+
+    const oneSec = Duration(seconds:1);
+    Timer.periodic(oneSec, (Timer t) async
+    {
+      if(await BluetoothBLE.isConnected())
+      {
+        BluetoothBLE.registerCallback(_handleDataReceived);
+      }
+      else
+      {
+        BluetoothBLE.unregisterCallback(_handleDataReceived);
+        titleText = await BluetoothBLE.connectToDevice();
+      }
+    });
+
+  }
   @override
   void dispose() {
     BluetoothBLE.unregisterCallback(_handleDataReceived);
@@ -31,9 +63,23 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
 
   void _handleDataReceived(String data) {
     setState(() {
-      receivedData = data;
-      developer.log(data, name: 'debug.device_watch');
-      BluetoothBLE.sendMessage("!Hi_${Random().nextInt(1000).toString()}_%;");
+      List<int> datum = data.codeUnits;
+      var value = datum[1]*256 + datum[0];
+      redText = "$value";
+      value = datum[3]*256 + datum[2];
+      irText = "$value";
+      value = datum[5]*256 + datum[4];
+      tempAText = "$value";
+      value = datum[7]*256 + datum[6];
+      tempOText = "$value";
+      value = datum[9]*256 + datum[8];
+      gyroXText = "$value";
+      value = datum[11]*256 + datum[10];
+      gyroYText = "$value";
+      value = datum[13]*256 + datum[12];
+      gyroZText = "$value";
+      //developer.log(data, name: 'debug.device_watch');
+      //BluetoothBLE.sendMessage("OK\n");
     });
   }
 
@@ -41,44 +87,59 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wearable Device'),
+        title: Text(titleText),
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text('Wearable Device $receivedData ${Random().nextInt(1000)}'),
-            const SizedBox(height: 20),
+            //Text('Wearable Device $receivedData ${Random().nextInt(1000)}'),
+            //const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => BluetoothBLE.connectToDevice(),
               child: const Text('Connect to device'),
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => BluetoothBLE.getConnectedState(),
-              child: const Text('Get connected device'),
+            TextField(
+              decoration: InputDecoration(
+                hintText: redText,
+              ),
+              enabled: false,
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => BluetoothBLE.disconnectedDevice(),
-              child: const Text('Disonnected device'),
+            TextField(
+              decoration: InputDecoration(
+                hintText: irText,
+              ),
+              enabled: false,
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => BluetoothBLE.sendMessage(
-                  "!Hi_${Random().nextInt(1000).toString()}_%;"),
-              child: const Text('Write Sth to device'),
+            TextField(
+              decoration: InputDecoration(
+                hintText: tempAText,
+              ),
+              enabled: false,
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const PanelDeviceScreen()),
-                );
-              },
-              child: const Text('Next page'),
+            TextField(
+              decoration: InputDecoration(
+                hintText: tempOText,
+              ),
+              enabled: false,
+            ),
+            TextField(
+              decoration: InputDecoration(
+                hintText: gyroXText,
+              ),
+              enabled: false,
+            ),
+            TextField(
+              decoration: InputDecoration(
+                hintText: gyroYText,
+              ),
+              enabled: false,
+            ),
+            TextField(
+              decoration: InputDecoration(
+                hintText: gyroZText,
+              ),
+              enabled: false,
             ),
           ],
         ),

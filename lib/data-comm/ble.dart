@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'dart:math';
+
+import 'package:fluttertoast/fluttertoast.dart';
 
 typedef DataReceivedCallback = void Function(String data);
 
 class BluetoothBLE {
-  static const String deviceName = "HMSoft";
-  static const String deviceAddress = "C8:FD:19:91:1B:65";
+  static const String deviceName = "SLEEP_TRACKER_BLE";
+  static const String deviceAddress = "FF:FF:FF:FF:FF:FF";
   static late BluetoothDevice _device;
   static late StreamSubscription<BluetoothConnectionState>?
       _connectionSubscription;
@@ -26,20 +29,36 @@ class BluetoothBLE {
   }
 
   // Check connection state
-  static Future<void> getConnectedState() async {
+  static Future<bool> isConnected() async {
     List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
-    if (devs.isEmpty) {
-      developer.log("Not connected to wearable device", name: 'debug.ble');
-      return;
-    } else {
-      developer.log("Already connected to wearable device", name: 'debug.ble');
+    if (devs.isNotEmpty)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  static Future<String> getConnectedDeviceName() async
+  {
+    List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
+    if (devs.isNotEmpty)
+    {
+      return devs.first.advName;
+    }
+    else
+    {
+      return "No device";
     }
   }
 
   // Connect to the device
-  static Future<void> connectToDevice() async {
+  static Future<String> connectToDevice() async {
     FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
     bool found = false;
+    String returnDeviceName = "NO device";
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
@@ -47,6 +66,7 @@ class BluetoothBLE {
 
           if (r.advertisementData.advName.toString() == deviceName) {
             found = true;
+            returnDeviceName = r.advertisementData.advName.toString();
             developer.log(
                 '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
                 name: 'debug.ble');
@@ -85,11 +105,12 @@ class BluetoothBLE {
         .first;
 
     await FlutterBluePlus.startScan(
-        // withServices: [Guid("180D")],
-        // withNames: ["HMSoft"],
+         //withServices: [Guid("180D")],
+         //withNames: ["SLEEP_TRACKER_BLE"],
         timeout: const Duration(seconds: 5));
 
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
+    return returnDeviceName;
   }
 
   // Disconnect from the device
@@ -108,7 +129,7 @@ class BluetoothBLE {
     List<BluetoothService> services = await _device.discoverServices();
     for (BluetoothService service in services) {
       for (BluetoothCharacteristic characteristic in service.characteristics) {
-        if (characteristic.properties.read) {
+        //if (characteristic.properties.read) {
           final subscription = characteristic.onValueReceived.listen((value) {
             String stringValue = String.fromCharCodes(value);
             developer.log(
@@ -125,7 +146,7 @@ class BluetoothBLE {
 
           await characteristic.setNotifyValue(true);
           _characteristicSubscriptions.add(subscription);
-        }
+        //}
       }
     }
   }
@@ -139,8 +160,6 @@ class BluetoothBLE {
         if (characteristic.properties.writeWithoutResponse &&
             characteristic.properties.write) {
           List<int> bytes = utf8.encode(message);
-          developer.log("Sending data: $message", name: 'debug.ble');
-
           await characteristic.write(bytes);
         }
       }
