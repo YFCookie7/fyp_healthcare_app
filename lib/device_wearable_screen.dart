@@ -29,7 +29,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   @override
   void initState() {
     super.initState();
-    // BluetoothBLE.registerCallback(_handleDataReceived);
+    BluetoothBLE.registerCallback(_handleDataReceived);
     // titleText = await BluetoothBLE.connectToDevice();
 
     /*

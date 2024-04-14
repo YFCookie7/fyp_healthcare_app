@@ -27,7 +27,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
     super.initState();
     BluetoothBLE.registerCallback(_handleDataReceived);
     BluetoothBLE.connectToDevice();
-    _checkBtStatus();
+    // _checkBtStatus();
   }
 
   void _checkBtStatus() async {
@@ -37,6 +37,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
         animationFile = "assets/lottie/tick_lottie.json";
       });
     } else {
+      BluetoothBLE.connectToDevice();
       developer.log("Not connected to device", name: 'debug.device');
       setState(() {
         animationFile = "assets/lottie/cross_lottie.json";
@@ -172,7 +173,18 @@ class _DeviceScreenState extends State<DeviceScreen> {
                               ),
                               Positioned(
                                 top: 9.0,
-                                right: 10.0,
+                                right: 60.0,
+                                child: IconButton(
+                                  onPressed: () {
+                                    _checkBtStatus();
+                                  },
+                                  icon: const Icon(Icons.sync,
+                                      color: Colors.white),
+                                ),
+                              ),
+                              Positioned(
+                                top: 9.0,
+                                right: 15.0,
                                 child: IconButton(
                                   onPressed: () {
                                     _checkBtStatus();
