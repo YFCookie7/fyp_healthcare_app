@@ -22,13 +22,13 @@ dependencies:
   encrypt: ^5.0.3
   fluttertoast: 8.1.0
   flutter_blue_plus: ^1.31.16
-  custom_navigation_bar: ^0.8.2
   permission_handler: ^11.3.0
   babstrap_settings_screen: 0.1.6
   workmanager: ^0.5.2
   syncfusion_flutter_gauges: ^25.1.38
   glassmorphism: ^3.0.0
   giffy_dialog: ^2.1.0
+  persistent_bottom_nav_bar_v2: ^5.2.2
 
 
 dev_dependencies:
