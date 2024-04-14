@@ -49,11 +49,11 @@ class _Test1State extends State<Test1> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text('Wearable Device $receivedData ${Random().nextInt(1000)}'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {}, //=> BluetoothBLE.connectToDevice(),
-              child: const Text('Connect to device'),
-            ),
+            // const SizedBox(height: 20),
+            // ElevatedButton(
+            //   onPressed: () => BluetoothBLE.connectToDevice(),
+            //   child: const Text('Connect to device'),
+            // ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {}, //=> BluetoothBLE.isConnected(),
@@ -62,13 +62,12 @@ class _Test1State extends State<Test1> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {},//BluetoothBLE.disconnectedDevice(),
+              onPressed: () {}, //BluetoothBLE.disconnectedDevice(),
               child: const Text('Disconnected device'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: ()
-              {
+              onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
