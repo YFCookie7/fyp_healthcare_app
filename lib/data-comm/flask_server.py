@@ -19,14 +19,14 @@ start_time = None
 
 
 # App GET sleep data
-@app.route("/get_data", methods=["GET"])
-def handle_request():
-    response_data = obtain_data()
-    return jsonify(response_data)
+# @app.route("/get_data", methods=["GET"])
+# def handle_request():
+#     response_data = obtain_data()
+#     return jsonify(response_data)
 
 
 # App GET pi status
-@app.route("/get_status", methods=["GET"])
+@app.route("/", methods=["GET"])
 def handle_request():
     if operating:
         response_data = {"status": "running"}
@@ -36,29 +36,29 @@ def handle_request():
 
 
 # App POST start/stop signal
-@app.route("/start_stop_pi", methods=["POST"])
-def handle_request():
-    json_content = request.get_json(force=True, silent=True)
+# @app.route("/start_stop_pi", methods=["POST"])
+# def handle_request():
+#     json_content = request.get_json(force=True, silent=True)
 
-    app_signal = json_content.get("command")
-    if app_signal == "start":
-        start_time = json_content.get("start_time")
-        operating = "running"
-    elif app_signal == "stop":
-        end_time = json_content.get("end_time")
-        operating = "stopped"
+#     app_signal = json_content.get("command")
+#     if app_signal == "start":
+#         start_time = json_content.get("start_time")
+#         operating = "running"
+#     elif app_signal == "stop":
+#         end_time = json_content.get("end_time")
+#         operating = "stopped"
 
-    return f"POST Request received"
+#     return f"POST Request received"
 
 
-# Pi POST start/stop signal
-def signal_start_end():
-    url = app_address
+# # Pi POST start/stop signal
+# def signal_start_end():
+#     url = app_address
 
-    data = {"start_time": start_time, "end_time": datetime.now()}
-    json_data = json.dumps(data)
-    headers = {"Content-Type": "application/json"}
-    response = requests.post(url, data=json_data, headers=headers)
+#     data = {"start_time": start_time, "end_time": datetime.now()}
+#     json_data = json.dumps(data)
+#     headers = {"Content-Type": "application/json"}
+#     response = requests.post(url, data=json_data, headers=headers)
 
 
 if __name__ == "__main__":

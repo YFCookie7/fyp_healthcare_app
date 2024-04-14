@@ -40,6 +40,17 @@ class BluetoothBLE {
     }
   }
 
+  // Check connection state old
+  static Future<void> getConnectedState() async {
+    List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
+    if (devs.isEmpty) {
+      developer.log("Not connected to wearable device", name: 'debug.ble');
+      return;
+    } else {
+      developer.log("Already connected to wearable device", name: 'debug.ble');
+    }
+  }
+
   static Future<String> getConnectedDeviceName() async {
     List<BluetoothDevice> devs = FlutterBluePlus.connectedDevices;
     if (devs.isNotEmpty) {
@@ -50,21 +61,16 @@ class BluetoothBLE {
   }
 
   // Connect to the device
-  static Future<String> connectToDevice() async {
+  static Future<void> connectToDevice() async {
     FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
     bool found = false;
-    String returnDeviceName = "NO device";
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
           ScanResult r = results.last;
 
-          developer.log(
-              '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
-              name: 'debug.ble');
           if (r.advertisementData.advName.toString() == deviceName) {
             found = true;
-            returnDeviceName = r.advertisementData.advName.toString();
             developer.log(
                 '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
                 name: 'debug.ble');
@@ -103,12 +109,11 @@ class BluetoothBLE {
         .first;
 
     await FlutterBluePlus.startScan(
-        //withServices: [Guid("180D")],
-        //withNames: ["SLEEP_TRACKER_BLE"],
+        // withServices: [Guid("180D")],
+        // withNames: ["HMSoft"],
         timeout: const Duration(seconds: 5));
 
     await FlutterBluePlus.isScanning.where((val) => val == false).first;
-    return returnDeviceName;
   }
 
   // Disconnect from the device
@@ -130,8 +135,8 @@ class BluetoothBLE {
         //if (characteristic.properties.read) {
         final subscription = characteristic.onValueReceived.listen((value) {
           String stringValue = String.fromCharCodes(value);
-          developer.log("Received data: $stringValue ${Random().nextInt(1000)}",
-              name: 'debug.ble');
+          // developer.log("Received data: $stringValue ${Random().nextInt(1000)}",
+          //     name: 'debug.ble');
           // invoke data callback
           // onDataReceived?.call(stringValue);
           for (var callback in callbacks_list) {

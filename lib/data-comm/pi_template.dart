@@ -43,8 +43,8 @@ class _PiTemplateState extends State<PiTemplate> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  // makeGetRequest();
-                  makePostRequest();
+                  makeGetRequest();
+                  // makePostRequest();
                   // textbox = piAddress;
                 });
               },

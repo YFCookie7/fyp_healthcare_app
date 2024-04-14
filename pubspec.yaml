@@ -28,7 +28,7 @@ dependencies:
   syncfusion_flutter_gauges: ^25.1.38
   glassmorphism: ^3.0.0
   giffy_dialog: ^2.1.0
-  persistent_bottom_nav_bar_v2: ^5.2.2
+  custom_navigation_bar: ^0.8.2
 
 
 dev_dependencies:
@@ -51,6 +51,7 @@ flutter:
     - assets/icon/
     - assets/lottie/
     - assets/gif/
+    - assets/image/
   fonts:
     - family: ProtestRiot
       fonts:

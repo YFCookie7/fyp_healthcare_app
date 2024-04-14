@@ -27,10 +27,10 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   String gyroZText = "gyroZText";
 
   @override
-  Future<void> initState() async {
+  void initState() {
     super.initState();
-    BluetoothBLE.registerCallback(_handleDataReceived);
-    titleText = await BluetoothBLE.connectToDevice();
+    // BluetoothBLE.registerCallback(_handleDataReceived);
+    // titleText = await BluetoothBLE.connectToDevice();
 
     /*
     if(await BluetoothBLE.isConnected())
@@ -39,44 +39,38 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
     }
     */
 
-    const oneSec = Duration(seconds:1);
-    Timer.periodic(oneSec, (Timer t) async
-    {
-      if(await BluetoothBLE.isConnected())
-      {
-        BluetoothBLE.registerCallback(_handleDataReceived);
-      }
-      else
-      {
-        BluetoothBLE.unregisterCallback(_handleDataReceived);
-        titleText = await BluetoothBLE.connectToDevice();
-      }
-    });
-
+    // const oneSec = Duration(seconds: 1);
+    // Timer.periodic(oneSec, (Timer t) async {
+    //   if (await BluetoothBLE.isConnected()) {
+    //     BluetoothBLE.registerCallback(_handleDataReceived);
+    //   } else {
+    //     BluetoothBLE.unregisterCallback(_handleDataReceived);
+    //     // titleText = await BluetoothBLE.connectToDevice();
+    //   }
+    // });
   }
+
   @override
   void dispose() {
-    BluetoothBLE.unregisterCallback(_handleDataReceived);
-    BluetoothBLE.disconnectedDevice();
     super.dispose();
   }
 
   void _handleDataReceived(String data) {
     setState(() {
       List<int> datum = data.codeUnits;
-      var value = datum[1]*256 + datum[0];
+      var value = datum[1] * 256 + datum[0];
       redText = "$value";
-      value = datum[3]*256 + datum[2];
+      value = datum[3] * 256 + datum[2];
       irText = "$value";
-      value = datum[5]*256 + datum[4];
+      value = datum[5] * 256 + datum[4];
       tempAText = "$value";
-      value = datum[7]*256 + datum[6];
+      value = datum[7] * 256 + datum[6];
       tempOText = "$value";
-      value = datum[9]*256 + datum[8];
+      value = datum[9] * 256 + datum[8];
       gyroXText = "$value";
-      value = datum[11]*256 + datum[10];
+      value = datum[11] * 256 + datum[10];
       gyroYText = "$value";
-      value = datum[13]*256 + datum[12];
+      value = datum[13] * 256 + datum[12];
       gyroZText = "$value";
       //developer.log(data, name: 'debug.device_watch');
       //BluetoothBLE.sendMessage("OK\n");
