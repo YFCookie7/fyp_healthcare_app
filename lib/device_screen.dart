@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 import 'package:fyp_healthcare_app/setting_screen.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -20,7 +21,8 @@ class DeviceScreen extends StatefulWidget {
 class _DeviceScreenState extends State<DeviceScreen> {
   final pi_address = 'http://192.168.1.109:5000';
   String receivedData = '';
-  String animationFile = "assets/lottie/tick_lottie.json";
+  String bt_status_animation = "assets/lottie/tick_lottie.json";
+  String pi_status_animation = "assets/lottie/tick_lottie.json";
 
   @override
   void initState() {
@@ -48,33 +50,68 @@ class _DeviceScreenState extends State<DeviceScreen> {
     if (await BluetoothBLE.isConnected()) {
       developer.log("Connected to device", name: 'debug.device');
       setState(() {
-        animationFile = "assets/lottie/tick_lottie.json";
+        bt_status_animation = "assets/lottie/tick_lottie.json";
       });
     } else {
       BluetoothBLE.connectToDevice();
       developer.log("Not connected to device", name: 'debug.device');
       setState(() {
-        animationFile = "assets/lottie/cross_lottie.json";
+        bt_status_animation = "assets/lottie/cross_lottie.json";
       });
     }
   }
 
-  Future<bool> checkPiStatus() async {
+  Future<void> checkPiStatus() async {
+    bool search_result = false;
     try {
-      final response = await http.get(Uri.parse(pi_address));
+      final response = await http
+          .get(Uri.parse(pi_address))
+          .timeout(const Duration(seconds: 2));
+      developer.log('haha', name: 'debug.device');
       if (response.statusCode == 200) {
         developer.log('GET request successful. Response: ${response.body}',
             name: 'debug.device');
-        return true;
+        search_result = true;
       } else {
+        search_result = false;
         developer.log(
             'GET request failed with status code: ${response.statusCode}',
             name: 'debug.device');
       }
+
+      setState(() {
+        if (search_result) {
+          pi_status_animation = "assets/lottie/tick_lottie.json";
+          Fluttertoast.showToast(
+              msg: "Smart alarm clock is operating now",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              fontSize: 16.0);
+        } else {
+          pi_status_animation = "assets/lottie/cross_lottie.json";
+
+          Fluttertoast.showToast(
+              msg: "Smart alarm clock is not detected",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              fontSize: 16.0);
+        }
+      });
     } catch (error) {
       developer.log('Error making GET request: $error', name: 'debug.device');
+      setState(() {
+        pi_status_animation = "assets/lottie/cross_lottie.json";
+
+        Fluttertoast.showToast(
+            msg: "Smart alarm clock is not detected",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            fontSize: 16.0);
+      });
     }
-    return false;
   }
 
   @override
@@ -230,10 +267,13 @@ class _DeviceScreenState extends State<DeviceScreen> {
                                 ),
                               ),
                               Positioned(
-                                  bottom: 50.0,
-                                  right: 40.0,
-                                  child: LottieAnimation(
-                                      animationFile: animationFile)),
+                                bottom: 50.0,
+                                right: 40.0,
+                                child: Lottie.asset(
+                                  bt_status_animation,
+                                  height: 100,
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -308,6 +348,17 @@ class _DeviceScreenState extends State<DeviceScreen> {
                                 ),
                               ),
                               Positioned(
+                                top: 9.0,
+                                right: 55.0,
+                                child: IconButton(
+                                  onPressed: () async {
+                                    await checkPiStatus();
+                                  },
+                                  icon: const Icon(Icons.sync,
+                                      color: Colors.white),
+                                ),
+                              ),
+                              Positioned(
                                 bottom: 50.0,
                                 left: 50.0,
                                 child: Image.asset(
@@ -320,9 +371,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
                               Positioned(
                                 bottom: 50.0,
                                 right: 40.0,
-                                child: LottieAnimation(
-                                    animationFile: animationFile),
-                              ),
+                                child: Lottie.asset(
+                                  pi_status_animation,
+                                  height: 100,
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -333,26 +386,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class LottieAnimation extends StatefulWidget {
-  final String animationFile;
-
-  const LottieAnimation({Key? key, required this.animationFile})
-      : super(key: key);
-
-  @override
-  _LottieAnimationState createState() => _LottieAnimationState();
-}
-
-class _LottieAnimationState extends State<LottieAnimation> {
-  @override
-  Widget build(BuildContext context) {
-    return Lottie.asset(
-      widget.animationFile,
-      height: 100,
     );
   }
 }
