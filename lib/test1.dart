@@ -4,7 +4,6 @@ import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'dart:math';
 import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'dart:developer' as developer;
-import 'package:fyp_healthcare_app/device_panel_screen.dart';
 import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 
 class Test1 extends StatefulWidget {

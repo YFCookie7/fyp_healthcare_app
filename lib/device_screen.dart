@@ -25,9 +25,23 @@ class _DeviceScreenState extends State<DeviceScreen> {
   @override
   void initState() {
     super.initState();
-    BluetoothBLE.registerCallback(_handleDataReceived);
-    BluetoothBLE.connectToDevice();
+    // BluetoothBLE.registerCallback(_handleDataReceived);
+    // BluetoothBLE.connectToDevice();
     // _checkBtStatus();
+  }
+
+  @override
+  void dispose() {
+    // BluetoothBLE.unregisterCallback(_handleDataReceived);
+    // BluetoothBLE.disconnectedDevice();
+    super.dispose();
+  }
+
+  void _handleDataReceived(String data) {
+    developer.log(data, name: 'debug.device');
+    setState(() {
+      // developer.log(data, name: 'debug.device');
+    });
   }
 
   void _checkBtStatus() async {
@@ -43,20 +57,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
         animationFile = "assets/lottie/cross_lottie.json";
       });
     }
-  }
-
-  @override
-  void dispose() {
-    BluetoothBLE.unregisterCallback(_handleDataReceived);
-    BluetoothBLE.disconnectedDevice();
-    super.dispose();
-  }
-
-  void _handleDataReceived(String data) {
-    developer.log(data, name: 'debug.device');
-    setState(() {
-      // developer.log(data, name: 'debug.device');
-    });
   }
 
   Future<bool> checkPiStatus() async {
@@ -139,6 +139,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       const SizedBox(height: 120.0),
                       GestureDetector(
                         onTap: () {
+                          BluetoothBLE.unregisterCallback(_handleDataReceived);
+                          BluetoothBLE.disconnectedDevice();
                           Navigator.push(
                             context,
                             MaterialPageRoute(

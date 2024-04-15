@@ -5,7 +5,6 @@ import 'package:fyp_healthcare_app/home_screen.dart';
 import 'package:fyp_healthcare_app/device_screen.dart';
 import "package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart";
 import 'package:fyp_healthcare_app/data-comm/ble.dart';
-import 'package:fyp_healthcare_app/device_panel_screen.dart';
 import 'package:fyp_healthcare_app/setting_screen.dart';
 import 'package:fyp_healthcare_app/test1.dart';
 import 'package:fyp_healthcare_app/device_wearable_screen.dart';
@@ -20,7 +19,7 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
   List<PersistentTabConfig> _tabs() => [
         PersistentTabConfig(
-          screen: const DeviceScreen(),
+          screen: const HomeScreen(),
           item: ItemConfig(
             icon: const Icon(Icons.home, size: 30),
             title: "Home",
@@ -28,7 +27,7 @@ class _MenuState extends State<Menu> {
           ),
         ),
         PersistentTabConfig(
-          screen: const ProfileScreen(),
+          screen: const DeviceScreen(),
           item: ItemConfig(
             icon: const Icon(Icons.devices, size: 30),
             title: "Device",
