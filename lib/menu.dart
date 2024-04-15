@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_healthcare_app/alarm_screen.dart';
 import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'package:fyp_healthcare_app/profile_screen.dart';
 import 'package:fyp_healthcare_app/home_screen.dart';
@@ -35,7 +36,7 @@ class _MenuState extends State<Menu> {
           ),
         ),
         PersistentTabConfig(
-          screen: const DeviceScreen(),
+          screen: const AlarmScreen(),
           item: ItemConfig(
             icon: const Icon(Icons.nights_stay, size: 30),
             title: "Alarm",

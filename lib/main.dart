@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:fyp_healthcare_app/alarm_screen.dart';
 import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'package:fyp_healthcare_app/onboarding_screen.dart';
 import 'package:fyp_healthcare_app/splash_screen.dart';
@@ -7,6 +8,7 @@ import 'package:fyp_healthcare_app/menu.dart';
 import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
+import 'package:alarm/alarm.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
@@ -23,6 +25,8 @@ void main() async {
     developer.log('New ip address record stored in shared preference',
         name: 'debug_main');
   }
+
+  await Alarm.init();
 
   runApp(const MainApp());
 }

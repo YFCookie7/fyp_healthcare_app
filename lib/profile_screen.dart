@@ -261,7 +261,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       iconItemSize: 20,
                       items: [
                         SettingsItem(
-                          onTap: () {},
+                          onTap: () {
+                            Fluttertoast.showToast(
+                                msg: "This app is developed by JQ01c-23",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                fontSize: 16.0);
+                          },
                           icons: Icons.info_rounded,
                           iconStyle: IconStyle(
                             backgroundColor: Colors.blue,
