@@ -17,6 +17,7 @@ class WearableDeviceScreen extends StatefulWidget {
 class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   String receivedData = '';
   String textbox = 'Hi';
+  double tempValue = 37.0;
 
   String titleText = "Connecting to device";
   String redText = "redText";
@@ -30,8 +31,8 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   @override
   void initState() {
     super.initState();
-    // BluetoothBLE.registerCallback(_handleDataReceived);
-    // BluetoothBLE.connectToDevice();
+    BluetoothBLE.registerCallback(_handleDataReceived);
+    BluetoothBLE.connectToDevice();
     // titleText = await BluetoothBLE.connectToDevice();
 
     // if(await BluetoothBLE.isConnected())
@@ -76,6 +77,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       // gyroZText = "$value";
       textbox = "$data ${Random().nextInt(1000)}";
       developer.log(data, name: 'debug.device_watch');
+      tempValue = 34 + Random().nextDouble() * (40 - 34);
       //BluetoothBLE.sendMessage("OK\n");
     });
   }
@@ -94,14 +96,23 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
               textbox,
               style: const TextStyle(fontSize: 20),
             ),
-            SfRadialGauge(
-              axes: <RadialAxis>[
-                RadialAxis(
-                  startAngle: 0,
-                  endAngle: 180,
-                )
-              ],
-            ),
+            SfRadialGauge(axes: <RadialAxis>[
+              RadialAxis(minimum: 34, maximum: 40, ranges: <GaugeRange>[
+                GaugeRange(startValue: 34, endValue: 36, color: Colors.green),
+                GaugeRange(startValue: 36, endValue: 38, color: Colors.orange),
+                GaugeRange(startValue: 38, endValue: 40, color: Colors.red)
+              ], pointers: <GaugePointer>[
+                NeedlePointer(value: tempValue, enableAnimation: true)
+              ], annotations: <GaugeAnnotation>[
+                GaugeAnnotation(
+                    widget: Container(
+                        child: Text(tempValue.toStringAsFixed(1),
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.bold))),
+                    angle: 90,
+                    positionFactor: 0.5)
+              ])
+            ])
           ],
         ),
       ),

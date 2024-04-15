@@ -33,7 +33,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-        debugShowCheckedModeBanner: false, home: WearableDeviceScreen());
+        debugShowCheckedModeBanner: false, home: SplashScreen());
   }
 }
 
