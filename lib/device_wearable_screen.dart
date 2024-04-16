@@ -109,7 +109,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       DateTime now = DateTime.now();
       nowSecond = now.second;
 
-      if(nowSecond!=lastSecond)
+      if(nowSecond/2!=lastSecond/2)
       {
         redNowMax = redNextMax;
         redNowMin = redNextMin;
@@ -156,7 +156,8 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
 
       if(nowIr>4096 && nowRed>4096)
       {
-        spo2 = 110-(25*nowRed/redNowMin)/(nowIr/irNowMin);
+        //spo2 = 110-(25*(nowRed-redNowMin)/redNowMin)/((nowIr-irNowMin)/irNowMin);
+        spo2 = 110-(25*(nowRed-redNowMin)*irNowMin/(redNowMin*(nowIr-irNowMin)));
       }
       else
       {
