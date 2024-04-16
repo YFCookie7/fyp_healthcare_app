@@ -156,7 +156,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
 
       if(nowIr>4096 && nowRed>4096)
       {
-        spo2 = 110-(25*nowRed*redNowMin)/(nowIr*irNowMin);
+        spo2 = 110-(25*nowRed/redNowMin)/(nowIr/irNowMin);
       }
       else
       {
