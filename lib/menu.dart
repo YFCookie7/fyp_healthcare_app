@@ -21,7 +21,7 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
   List<PersistentTabConfig> _tabs() => [
         PersistentTabConfig(
-          screen: const HomeScreen(),
+          screen: const WearableDeviceScreen(),
           item: ItemConfig(
             icon: const Icon(Icons.home, size: 30),
             title: "Home",

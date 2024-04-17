@@ -179,12 +179,13 @@ class _DeviceScreenState extends State<DeviceScreen> {
                         onTap: () {
                           BluetoothBLE.unregisterCallback(_handleDataReceived);
                           BluetoothBLE.disconnectedDevice();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const WearableDeviceScreen()),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //       builder: (context) =>
+                          //           const WearableDeviceScreen())
+                          //           ,
+                          // );
                         },
                         child: Container(
                           height: 250,

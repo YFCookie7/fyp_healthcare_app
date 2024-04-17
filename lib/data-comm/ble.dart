@@ -10,10 +10,10 @@ import 'package:fluttertoast/fluttertoast.dart';
 typedef DataReceivedCallback = void Function(String data);
 
 class BluetoothBLE {
-  // static const String deviceName = "SLEEP_TRACKER_BLE";
-  // static const String deviceAddress = "FF:FF:FF:FF:FF:FF";
-  static const String deviceName = "HMSoft";
+  static const String deviceName = "SLEEP_TRACKER_BLE";
   static const String deviceAddress = "FF:FF:FF:FF:FF:FF";
+  // static const String deviceName = "HMSoft";
+  // static const String deviceAddress = "FF:FF:FF:FF:FF:FF";
   static late BluetoothDevice _device;
   static late StreamSubscription<BluetoothConnectionState>?
       _connectionSubscription;
