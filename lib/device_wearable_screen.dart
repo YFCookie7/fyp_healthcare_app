@@ -100,90 +100,79 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       textbox = "$data ${Random().nextInt(1000)}";
       developer.log(data, name: 'debug.device_watch');
 
-      /*
-      tempValue = 34 +
-          Random().nextDouble() *
-              (40 - 34); // replace this with actual temperature
-       */
+      // DateTime now = DateTime.now();
+      // nowSecond = now.second;
 
-      DateTime now = DateTime.now();
-      nowSecond = now.second;
+      // if (nowSecond / 2 != lastSecond / 2) {
+      //   redNowMax = redNextMax;
+      //   redNowMin = redNextMin;
+      //   redNextMax = 0;
+      //   redNextMin = 65535;
 
-      if(nowSecond/2!=lastSecond/2)
-      {
-        redNowMax = redNextMax;
-        redNowMin = redNextMin;
-        redNextMax = 0;
-        redNextMin = 65535;
+      //   irNowMax = irNextMax;
+      //   irNowMin = irNextMin;
+      //   irNextMax = 0;
+      //   irNextMin = 65535;
+      // }
 
-        irNowMax = irNextMax;
-        irNowMin = irNextMin;
-        irNextMax = 0;
-        irNextMin = 65535;
-      }
+      // if (data.length == 14) {
+      //   List<int> datum = data.codeUnits;
+      //   nowRed = datum[1] * 256 + datum[0];
+      //   nowIr = datum[3] * 256 + datum[2];
+      //   nowTempA = datum[5] * 256 + datum[4];
+      //   nowTempO = datum[7] * 256 + datum[6];
+      //   nowGX = datum[9] * 256 + datum[8];
+      //   nowGY = datum[11] * 256 + datum[10];
+      //   nowGZ = datum[13] * 256 + datum[12];
+      // }
 
+      // if (nowIr > irNextMax) {
+      //   irNextMax = nowIr;
+      // }
+      // if (nowIr < irNextMin) {
+      //   irNextMin = nowIr;
+      // }
+      // if (nowRed > redNextMax) {
+      //   redNextMax = nowRed;
+      // }
+      // if (nowRed < redNextMin) {
+      //   redNextMin = nowRed;
+      // }
 
-      if(data.length==14)
-      {
-        List<int> datum = data.codeUnits;
-        nowRed = datum[1]*256 + datum[0];
-        nowIr = datum[3]*256 + datum[2];
-        nowTempA = datum[5]*256 + datum[4];
-        nowTempO = datum[7]*256 + datum[6];
-        nowGX = datum[9]*256 + datum[8];
-        nowGY = datum[11]*256 + datum[10];
-        nowGZ = datum[13]*256 + datum[12];
-      }
+      // tempValue = nowTempO / 50 - 273.15;
 
-      if(nowIr>irNextMax)
-      {
-        irNextMax = nowIr;
-      }
-      if(nowIr<irNextMin)
-      {
-        irNextMin = nowIr;
-      }
-      if(nowRed>redNextMax)
-      {
-        redNextMax = nowRed;
-      }
-      if(nowRed<redNextMin)
-      {
-        redNextMin = nowRed;
-      }
+      // if (nowIr > 4096 && nowRed > 4096) {
+      //   //spo2 = 110-(25*(nowRed-redNowMin)/redNowMin)/((nowIr-irNowMin)/irNowMin);
+      //   spo2 = 110 -
+      //       (25 *
+      //           (nowRed - redNowMin) *
+      //           irNowMin /
+      //           (redNowMin * (nowIr - irNowMin)));
+      // } else {
+      //   spo2 = 0;
+      // }
 
-      tempValue = nowTempO/50 - 273.15;
-
-      if(nowIr>4096 && nowRed>4096)
-      {
-        //spo2 = 110-(25*(nowRed-redNowMin)/redNowMin)/((nowIr-irNowMin)/irNowMin);
-        spo2 = 110-(25*(nowRed-redNowMin)*irNowMin/(redNowMin*(nowIr-irNowMin)));
-      }
-      else
-      {
-        spo2 = 0;
-      }
-
-      heartbeatValue = spo2;
+      // heartbeatValue = spo2;
+      // lastRed = nowRed;
+      // lastIr = nowIr;
+      // lastTempA = nowTempA;
+      // lastTempO = nowTempO;
+      // lastGX = nowGX;
+      // lastGY = nowGY;
+      // lastGZ = nowGZ;
+      // lastSecond = nowSecond;
 
       //heartbeatValue = nowSecond;
 
-      /*
-      heartbeatValue =
-          60 + Random().nextInt(40); // replace this with actual heartbeat
-      heartbeatValue_double = ((heartbeatValue) * (90) / (160));
+      tempValue = 34 +
+          Random().nextDouble() *
+              (40 - 34); // replace this with actual temperature
+
+      int heartbeatValue = Random().nextInt(31) + 60;
+      heartbeatValue_double =
+          heartbeatValue.toDouble(); // replace this with actual temperature
       developer.log(heartbeatValue_double.toString(),
           name: 'debug.device_watch');
-      */
-
-      lastRed = nowRed;
-      lastIr = nowIr;
-      lastTempA = nowTempA;
-      lastTempO = nowTempO;
-      lastGX = nowGX;
-      lastGY = nowGY;
-      lastGZ = nowGZ;
-      lastSecond = nowSecond;
     });
   }
 
@@ -347,7 +336,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
                                                   // fit: BoxFit.cover,
                                                 ),
                                                 Text(
-                                                  '${heartbeatValue.toStringAsFixed(0)} bpm',
+                                                  '${heartbeatValue_double.toStringAsFixed(0)} bpm',
                                                   style: const TextStyle(
                                                       fontSize: 25,
                                                       fontWeight:

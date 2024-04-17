@@ -16,12 +16,26 @@ class AlarmScreen extends StatefulWidget {
 
 class _AlarmScreenState extends State<AlarmScreen> {
   String textbox = 'Hi';
-  String tb_start = '00';
-  String tb_end = '12';
+  String tb_start = '00:00';
+  String tb_end = '06:00';
   String tb_alarm = 'No alarm set';
   double _pointerValue1 = 0;
   double _pointerValue2 = 6;
   bool isToggled = false;
+
+  var alarmSettings = AlarmSettings(
+    id: 42,
+    dateTime: DateTime.now(),
+    assetAudioPath: 'assets/audio/alarm.mp3',
+    loopAudio: false,
+    vibrate: true,
+    volume: 0.8,
+    fadeDuration: 3.0,
+    notificationTitle: '',
+    notificationBody: '',
+    enableNotificationOnKill: true,
+    androidFullScreenIntent: true,
+  );
 
   @override
   void initState() {
@@ -279,7 +293,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 developer.log('Difference: $difference',
                                     name: 'debug_alarm');
 
-                                final alarmSettings = AlarmSettings(
+                                alarmSettings = AlarmSettings(
                                   id: 42,
                                   dateTime: selectedTime,
                                   assetAudioPath: 'assets/audio/alarm.mp3',
@@ -313,7 +327,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 await Alarm.stop(42);
 
                                 setState(() {
-                                  tb_alarm = "No alarm set";
                                   isToggled = false;
                                 });
                               },
@@ -356,9 +369,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                               Switch(
                                 value: isToggled,
                                 onChanged: (bool value) {
-                                  setState(() {
-                                    isToggled = value;
-                                  });
+                                  setState(() {});
                                 },
                               ),
                               const SizedBox(
