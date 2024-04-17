@@ -77,8 +77,8 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   @override
   void initState() {
     super.initState();
-    // BluetoothBLE.registerCallback(_handleDataReceived);
-    // BluetoothBLE.connectToDevice();
+    BluetoothBLE.registerCallback(_handleDataReceived);
+    BluetoothBLE.connectToDevice();
     // titleText = await BluetoothBLE.connectToDevice();
 
     // if(await BluetoothBLE.isConnected())
@@ -175,7 +175,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       tb_gyroX = nowGX.toString();
       tb_gyroY = nowGY.toString();
       tb_gyroZ = nowGZ.toString();
-      tb_spo2 = "${spo2} %";
+      tb_spo2 = "${spo2.round()} %";
       tb_temp = nowTempO.toString();
       tb_roomtemp = "${roomtempValue.toStringAsFixed(1)}°C";
       // tb_heartrate = heartbeatValue.toString();
