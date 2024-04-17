@@ -23,10 +23,18 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   double tempValue = 37.0;
   double heartbeatValue = 60;
   double heartbeatValue_double = 0.0;
+  double tempAvalue = 24.0;
+  String tb_gyroX = '0';
+  String tb_gyroY = '0';
+  String tb_gyroZ = '0';
+  String tb_spo2 = '0';
+  String tb_temp = '0';
+  String tb_roomtemp = '0';
+  String tb_heartrate = '0';
 
   String titleText = "Connecting to device";
 
-  double spo2 = 0;
+  double spo2 = 50;
   int nowRed = 0;
   int lastRed = 0;
   int nowIr = 0;
@@ -100,79 +108,87 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       textbox = "$data ${Random().nextInt(1000)}";
       developer.log(data, name: 'debug.device_watch');
 
-      // DateTime now = DateTime.now();
-      // nowSecond = now.second;
+      DateTime now = DateTime.now();
+      nowSecond = now.second;
 
-      // if (nowSecond / 2 != lastSecond / 2) {
-      //   redNowMax = redNextMax;
-      //   redNowMin = redNextMin;
-      //   redNextMax = 0;
-      //   redNextMin = 65535;
+      if (nowSecond / 2 != lastSecond / 2) {
+        redNowMax = redNextMax;
+        redNowMin = redNextMin;
+        redNextMax = 0;
+        redNextMin = 65535;
 
-      //   irNowMax = irNextMax;
-      //   irNowMin = irNextMin;
-      //   irNextMax = 0;
-      //   irNextMin = 65535;
-      // }
+        irNowMax = irNextMax;
+        irNowMin = irNextMin;
+        irNextMax = 0;
+        irNextMin = 65535;
+      }
 
-      // if (data.length == 14) {
-      //   List<int> datum = data.codeUnits;
-      //   nowRed = datum[1] * 256 + datum[0];
-      //   nowIr = datum[3] * 256 + datum[2];
-      //   nowTempA = datum[5] * 256 + datum[4];
-      //   nowTempO = datum[7] * 256 + datum[6];
-      //   nowGX = datum[9] * 256 + datum[8];
-      //   nowGY = datum[11] * 256 + datum[10];
-      //   nowGZ = datum[13] * 256 + datum[12];
-      // }
+      if (data.length == 14) {
+        List<int> datum = data.codeUnits;
+        nowRed = datum[1] * 256 + datum[0];
+        nowIr = datum[3] * 256 + datum[2];
+        nowTempA = datum[5] * 256 + datum[4];
+        nowTempO = datum[7] * 256 + datum[6];
+        nowGX = datum[9] * 256 + datum[8];
+        nowGY = datum[11] * 256 + datum[10];
+        nowGZ = datum[13] * 256 + datum[12];
+      }
 
-      // if (nowIr > irNextMax) {
-      //   irNextMax = nowIr;
-      // }
-      // if (nowIr < irNextMin) {
-      //   irNextMin = nowIr;
-      // }
-      // if (nowRed > redNextMax) {
-      //   redNextMax = nowRed;
-      // }
-      // if (nowRed < redNextMin) {
-      //   redNextMin = nowRed;
-      // }
+      if (nowIr > irNextMax) {
+        irNextMax = nowIr;
+      }
+      if (nowIr < irNextMin) {
+        irNextMin = nowIr;
+      }
+      if (nowRed > redNextMax) {
+        redNextMax = nowRed;
+      }
+      if (nowRed < redNextMin) {
+        redNextMin = nowRed;
+      }
 
-      // tempValue = nowTempO / 50 - 273.15;
+      tempValue = nowTempO / 50 - 273.15;
 
-      // if (nowIr > 4096 && nowRed > 4096) {
-      //   //spo2 = 110-(25*(nowRed-redNowMin)/redNowMin)/((nowIr-irNowMin)/irNowMin);
-      //   spo2 = 110 -
-      //       (25 *
-      //           (nowRed - redNowMin) *
-      //           irNowMin /
-      //           (redNowMin * (nowIr - irNowMin)));
-      // } else {
-      //   spo2 = 0;
-      // }
+      if (nowIr > 4096 && nowRed > 4096) {
+        //spo2 = 110-(25*(nowRed-redNowMin)/redNowMin)/((nowIr-irNowMin)/irNowMin);
+        spo2 = 110 -
+            (25 *
+                (nowRed - redNowMin) *
+                irNowMin /
+                (redNowMin * (nowIr - irNowMin)));
+      } else {
+        spo2 = 0;
+      }
 
       // heartbeatValue = spo2;
-      // lastRed = nowRed;
-      // lastIr = nowIr;
-      // lastTempA = nowTempA;
-      // lastTempO = nowTempO;
-      // lastGX = nowGX;
-      // lastGY = nowGY;
-      // lastGZ = nowGZ;
-      // lastSecond = nowSecond;
+      lastRed = nowRed;
+      lastIr = nowIr;
+      lastTempA = nowTempA;
+      lastTempO = nowTempO;
+      lastGX = nowGX;
+      lastGY = nowGY;
+      lastGZ = nowGZ;
+      lastSecond = nowSecond;
 
       //heartbeatValue = nowSecond;
+      tb_gyroX = nowGX.toString();
+      tb_gyroY = nowGY.toString();
+      tb_gyroZ = nowGZ.toString();
+      tb_spo2 = "${spo2} %";
+      tb_temp = nowTempO.toString();
+      tb_roomtemp = "${nowTempA.toStringAsFixed(1)}°C";
+      // tb_heartrate = heartbeatValue.toString();
 
-      tempValue = 34 +
-          Random().nextDouble() *
-              (40 - 34); // replace this with actual temperature
+      // debug purpose
+      // tempValue = 34 +
+      //     Random().nextDouble() *
+      //         (40 - 34); // replace this with actual temperature
 
-      int heartbeatValue = Random().nextInt(31) + 60;
-      heartbeatValue_double =
-          heartbeatValue.toDouble(); // replace this with actual temperature
-      developer.log(heartbeatValue_double.toString(),
-          name: 'debug.device_watch');
+      // int heartbeatValue = Random().nextInt(31) + 60;
+      // heartbeatValue_double =
+      //     heartbeatValue.toDouble(); // replace this with actual temperature
+      // developer.log(heartbeatValue_double.toString(),
+      //     name: 'debug.device_watch');
     });
   }
 
@@ -184,14 +200,14 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
         systemOverlayStyle:
             const SystemUiOverlayStyle(statusBarColor: Colors.blue),
         backgroundColor: Colors.transparent,
-        title: const Padding(
-          padding: EdgeInsets.only(top: 20.0, left: 5.0),
-          child: Text(
-            'Wearable Device',
-            style: TextStyle(
-                fontFamily: 'PatuaOne', fontSize: 24, color: Colors.black),
-          ),
-        ),
+        // title: const Padding(
+        //   padding: EdgeInsets.only(top: 20.0, left: 5.0),
+        //   child: Text(
+        //     'Wearable Device',
+        //     style: TextStyle(
+        //         fontFamily: 'PatuaOne', fontSize: 24, color: Colors.black),
+        //   ),
+        // ),
       ),
       body: Container(
         height: double.infinity,
@@ -236,122 +252,282 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          textbox,
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                        SizedBox(
-                          width: 250,
-                          height: 250,
-                          child: SfRadialGauge(axes: <RadialAxis>[
-                            RadialAxis(
-                                minimum: 34,
-                                maximum: 40,
-                                ranges: <GaugeRange>[
-                                  GaugeRange(
-                                      startValue: 34,
-                                      endValue: 36,
-                                      color: Colors.green),
-                                  GaugeRange(
-                                      startValue: 36,
-                                      endValue: 38,
-                                      color: Colors.orange),
-                                  GaugeRange(
-                                      startValue: 38,
-                                      endValue: 40,
-                                      color: Colors.red)
-                                ],
-                                pointers: <GaugePointer>[
-                                  NeedlePointer(
-                                      value: tempValue, enableAnimation: true)
-                                ],
-                                annotations: <GaugeAnnotation>[
-                                  GaugeAnnotation(
-                                      widget: Container(
-                                        width: 140.00,
-                                        height: 50.00,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const Image(
-                                              image: ExactAssetImage(
-                                                  'assets/icon/body_temperature.png'),
-                                              fit: BoxFit.fitHeight,
-                                              height: 35,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              "${tempValue.toStringAsFixed(1)}°C",
-                                              style: const TextStyle(
-                                                  fontSize: 25,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      angle: 90,
-                                      positionFactor: 0.5)
-                                ]),
-                          ]),
-                        ),
-                        SizedBox(
-                          width: 250,
-                          height: 250,
-                          child: SfRadialGauge(axes: <RadialAxis>[
-                            RadialAxis(
-                                interval: 10,
-                                startAngle: 270,
-                                endAngle: 270,
-                                showTicks: false,
-                                showLabels: false,
-                                axisLineStyle: AxisLineStyle(thickness: 20),
-                                pointers: <GaugePointer>[
-                                  RangePointer(
-                                      value: heartbeatValue_double,
-                                      width: 20,
-                                      color: Color(0xFFFFCD60),
-                                      enableAnimation: true,
-                                      cornerStyle: CornerStyle.bothCurve)
-                                ],
-                                annotations: <GaugeAnnotation>[
-                                  GaugeAnnotation(
-                                      widget: Column(
-                                        children: <Widget>[
-                                          const SizedBox(
-                                            height: 80,
-                                          ),
-                                          Container(
-                                            width: 200.00,
-                                            height: 80.00,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 150,
+                              height: 150,
+                              child: SfRadialGauge(axes: <RadialAxis>[
+                                RadialAxis(
+                                    minimum: 34,
+                                    maximum: 40,
+                                    ranges: <GaugeRange>[
+                                      GaugeRange(
+                                          startValue: 34,
+                                          endValue: 36,
+                                          color: Colors.green),
+                                      GaugeRange(
+                                          startValue: 36,
+                                          endValue: 38,
+                                          color: Colors.orange),
+                                      GaugeRange(
+                                          startValue: 38,
+                                          endValue: 40,
+                                          color: Colors.red)
+                                    ],
+                                    pointers: <GaugePointer>[
+                                      NeedlePointer(
+                                          value: tempValue,
+                                          enableAnimation: true)
+                                    ],
+                                    annotations: <GaugeAnnotation>[
+                                      GaugeAnnotation(
+                                          widget: Container(
+                                            width: 140.00,
+                                            height: 50.00,
                                             child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.center,
                                               children: [
-                                                Lottie.asset(
-                                                  'assets/lottie/heartbeat_lottie.json',
-                                                  width: 90,
-                                                  height: 90,
-                                                  // fit: BoxFit.cover,
+                                                const Image(
+                                                  image: ExactAssetImage(
+                                                      'assets/icon/body_temperature.png'),
+                                                  fit: BoxFit.fitHeight,
+                                                  height: 35,
                                                 ),
+                                                const SizedBox(width: 2),
                                                 Text(
-                                                  '${heartbeatValue_double.toStringAsFixed(0)} bpm',
+                                                  "${tempValue.toStringAsFixed(1)}°C",
                                                   style: const TextStyle(
-                                                      fontSize: 25,
+                                                      fontSize: 14,
                                                       fontWeight:
                                                           FontWeight.bold),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                        ],
-                                      ),
-                                      angle: 270,
-                                      positionFactor: 0.1)
-                                ])
-                          ]),
+                                          angle: 90,
+                                          positionFactor: 0.5)
+                                    ]),
+                              ]),
+                            ),
+                            const SizedBox(width: 20),
+                            SizedBox(
+                              width: 150,
+                              height: 150,
+                              child: SfRadialGauge(axes: <RadialAxis>[
+                                RadialAxis(
+                                    interval: 10,
+                                    startAngle: 270,
+                                    endAngle: 270,
+                                    showTicks: false,
+                                    showLabels: false,
+                                    axisLineStyle: AxisLineStyle(thickness: 20),
+                                    pointers: <GaugePointer>[
+                                      RangePointer(
+                                          value: heartbeatValue_double,
+                                          width: 20,
+                                          color: Color(0xFFFFCD60),
+                                          enableAnimation: true,
+                                          cornerStyle: CornerStyle.bothCurve)
+                                    ],
+                                    annotations: <GaugeAnnotation>[
+                                      GaugeAnnotation(
+                                          widget: Column(
+                                            children: <Widget>[
+                                              const SizedBox(
+                                                height: 25,
+                                              ),
+                                              Container(
+                                                width: 100.00,
+                                                height: 100.00,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Lottie.asset(
+                                                      'assets/lottie/heartbeat_lottie.json',
+                                                      width: 60,
+                                                      height: 60,
+                                                      // fit: BoxFit.cover,
+                                                    ),
+                                                    Text(
+                                                      '${heartbeatValue_double.toStringAsFixed(0)} bpm',
+                                                      style: const TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          angle: 270,
+                                          positionFactor: 0.1)
+                                    ])
+                              ]),
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 150,
+                              height: 150,
+                              child: SfRadialGauge(axes: <RadialAxis>[
+                                RadialAxis(
+                                    minimum: 15,
+                                    maximum: 50,
+                                    ranges: <GaugeRange>[
+                                      GaugeRange(
+                                          startValue: 15,
+                                          endValue: 20,
+                                          color:
+                                              Color.fromARGB(255, 3, 255, 242)),
+                                      GaugeRange(
+                                          startValue: 20,
+                                          endValue: 35,
+                                          color: Colors.orange),
+                                      GaugeRange(
+                                          startValue: 35,
+                                          endValue: 50,
+                                          color: Colors.red)
+                                    ],
+                                    annotations: <GaugeAnnotation>[
+                                      GaugeAnnotation(
+                                          widget: Container(
+                                            width: 140.00,
+                                            height: 50.00,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Lottie.asset(
+                                                  'assets/lottie/roomTemp_lottie.json',
+                                                  width: 40,
+                                                  height: 40,
+                                                  // fit: BoxFit.cover,
+                                                ),
+                                                Text(
+                                                  tb_roomtemp,
+                                                  style: const TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          angle: 90,
+                                          positionFactor: 0.1)
+                                    ]),
+                              ]),
+                            ),
+                            const SizedBox(width: 20),
+                            SizedBox(
+                              width: 150,
+                              height: 150,
+                              child: SfRadialGauge(axes: <RadialAxis>[
+                                RadialAxis(
+                                    interval: 10,
+                                    startAngle: 270,
+                                    endAngle: 270,
+                                    showTicks: false,
+                                    showLabels: false,
+                                    axisLineStyle:
+                                        const AxisLineStyle(thickness: 20),
+                                    pointers: <GaugePointer>[
+                                      RangePointer(
+                                          value: spo2,
+                                          width: 20,
+                                          color: const Color.fromARGB(
+                                              255, 5, 66, 233),
+                                          enableAnimation: true,
+                                          cornerStyle: CornerStyle.bothCurve)
+                                    ],
+                                    annotations: <GaugeAnnotation>[
+                                      GaugeAnnotation(
+                                          widget: Column(
+                                            children: <Widget>[
+                                              const SizedBox(
+                                                height: 25,
+                                              ),
+                                              Container(
+                                                width: 100.00,
+                                                height: 100.00,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    Lottie.asset(
+                                                      'assets/lottie/spo2_lottie.json',
+                                                      width: 60,
+                                                      height: 60,
+                                                      // fit: BoxFit.cover,
+                                                    ),
+                                                    Text(
+                                                      tb_spo2,
+                                                      style: const TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          angle: 270,
+                                          positionFactor: 0.1)
+                                    ])
+                              ]),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          width: 400,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          right:
+                                              BorderSide(color: Colors.grey))),
+                                  child: Center(
+                                    child: Text('X:\n$tb_gyroX'),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          right:
+                                              BorderSide(color: Colors.grey))),
+                                  child: Center(
+                                    child: Text('Y:\n$tb_gyroY'),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  child: Center(
+                                    child: Text('Z:\n$tb_gyroZ'),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
