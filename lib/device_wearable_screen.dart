@@ -21,13 +21,14 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   String receivedData = '';
   String textbox = 'Hi';
   double tempValue = 37.0;
+  double roomtempValue = 30.0;
   double heartbeatValue = 60;
   double heartbeatValue_double = 0.0;
   double tempAvalue = 24.0;
   String tb_gyroX = '0';
   String tb_gyroY = '0';
   String tb_gyroZ = '0';
-  String tb_spo2 = '0';
+  String tb_spo2 = '0%';
   String tb_temp = '0';
   String tb_roomtemp = '0';
   String tb_heartrate = '0';
@@ -76,8 +77,8 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   @override
   void initState() {
     super.initState();
-    BluetoothBLE.registerCallback(_handleDataReceived);
-    BluetoothBLE.connectToDevice();
+    // BluetoothBLE.registerCallback(_handleDataReceived);
+    // BluetoothBLE.connectToDevice();
     // titleText = await BluetoothBLE.connectToDevice();
 
     // if(await BluetoothBLE.isConnected())
@@ -146,7 +147,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       if (nowRed < redNextMin) {
         redNextMin = nowRed;
       }
-
+      roomtempValue = nowTempA / 50 - 273.15;
       tempValue = nowTempO / 50 - 273.15;
 
       if (nowIr > 4096 && nowRed > 4096) {
@@ -176,7 +177,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       tb_gyroZ = nowGZ.toString();
       tb_spo2 = "${spo2} %";
       tb_temp = nowTempO.toString();
-      tb_roomtemp = "${nowTempA.toStringAsFixed(1)}°C";
+      tb_roomtemp = "${roomtempValue.toStringAsFixed(1)}°C";
       // tb_heartrate = heartbeatValue.toString();
 
       // debug purpose
@@ -528,6 +529,56 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
+                        Container(
+                          width: 400,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                          ),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          right:
+                                              BorderSide(color: Colors.grey))),
+                                  child: Center(
+                                    child: Text('Time'),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          right:
+                                              BorderSide(color: Colors.grey))),
+                                  child: Center(
+                                    child: Text('Body temperature'),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border(
+                                          right:
+                                              BorderSide(color: Colors.grey))),
+                                  child: Center(
+                                    child: Text('Heart rate'),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Container(
+                                  child: Center(
+                                    child: Text('Spo2'),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
