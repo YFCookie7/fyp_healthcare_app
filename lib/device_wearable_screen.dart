@@ -40,7 +40,14 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
 
   String titleText = "Connecting to device";
 
+  var bufferIr = List<int>.filled(300, 0);
+  var bufferRed = List<int>.filled(300, 0);
+
   double spo2 = 50;
+  //double hr = 0;
+  int now10Millisecond = 0;
+  int last10Millisecond = 0;
+
   int nowRed = 0;
   int lastRed = 0;
   int nowIr = 0;
@@ -117,6 +124,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
 
       DateTime now = DateTime.now();
       nowSecond = now.second;
+      now10Millisecond = (now.millisecond/10).floor();
 
       if (nowSecond / 2 != lastSecond / 2) {
         redNowMax = redNextMax;
@@ -167,6 +175,87 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
         spo2 = 0;
       }
 
+      int i=last10Millisecond;
+      int j=lastSecond;
+
+      while(i!=now10Millisecond || j!=nowSecond)
+      {
+        bufferIr[i+(j%3)*100] = nowIr;
+        bufferRed[i+(j%3)*100] = nowRed;
+        //heartbeatValue_double = i+(j%3)*100;
+        i++;
+        if(i>99)
+        {
+          i=0;
+          j++;
+          if(j>59)
+          {
+            j=0;
+          }
+          //if it passes through the 300th second
+          if(j%3==0 && i==0)
+          {
+            //start HR calculation for the last 3 seconds
+            int firstMax = 0;
+            int secondMax = 0;
+            List<int> maxPoints = [];
+            for(int count=1; count<299; count++)
+            {
+              //this is a max point
+              if(bufferIr[count-1]<=bufferIr[count] && bufferIr[count+1]<=bufferIr[count])
+              {
+                int numSmallerDataPast = 0;
+                int numSmallerDataFuture = 0;
+                int numDataPast = 0;
+                int numDataFuture = 0;
+                for(int k=1; k<30; k++)
+                {
+                  if(count+k<=299)
+                  {
+                    numDataFuture++;
+                    if(bufferIr[count]>bufferIr[count+k])
+                    {
+                      numSmallerDataFuture++;
+                    }
+                  }
+                  if(count-k>=0)
+                  {
+                    numDataPast++;
+                    if(bufferIr[count]>=bufferIr[count-k])
+                    {
+                      numSmallerDataPast++;
+                    }
+                  }
+                }
+
+                if(numSmallerDataFuture/numDataFuture>=0.95 && numSmallerDataPast/numDataPast>=0.95)
+                {
+                  maxPoints.add(count);
+                  count = count+30;
+                }
+              }
+            }
+            int maxPointCount = 1;
+            int interval = 0;
+
+            if(maxPoints.isNotEmpty && redNowMin>4096 && irNowMin>4096)
+            {
+              while(maxPointCount<maxPoints.length)
+              {
+                interval = interval + (maxPoints[maxPointCount]-maxPoints[maxPointCount-1]);
+                maxPointCount++;
+              }
+              heartbeatValue_double = 60/(interval/(100*(maxPointCount-1)));
+            }
+            else
+            {
+              heartbeatValue_double = 0;
+            }
+            //tb_heartrate = "$heartbeatValue_double bpm";
+          }
+        }
+      }
+
       // heartbeatValue = spo2;
       lastRed = nowRed;
       lastIr = nowIr;
@@ -176,6 +265,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       lastGY = nowGY;
       lastGZ = nowGZ;
       lastSecond = nowSecond;
+      last10Millisecond = now10Millisecond;
 
       //heartbeatValue = nowSecond;
       tb_gyroX = nowGX.toString();
@@ -203,6 +293,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       //     heartbeatValue.toDouble(); // replace this with actual temperature
       // developer.log(heartbeatValue_double.toString(),
       //     name: 'debug.device_watch');
+
     });
   }
 
