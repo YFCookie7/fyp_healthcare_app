@@ -8,7 +8,6 @@ import 'package:fyp_healthcare_app/device_screen.dart';
 import "package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart";
 import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'package:fyp_healthcare_app/setting_screen.dart';
-import 'package:fyp_healthcare_app/test1.dart';
 import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 
 class Menu extends StatefulWidget {
