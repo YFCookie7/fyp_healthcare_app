@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:glassmorphism/glassmorphism.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:http/http.dart' as http;
 import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'dart:developer' as developer;
 import 'dart:math';
@@ -17,19 +22,24 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String textbox = 'Hi';
+  late final String piAddress;
+  bool? isSleeping;
 
   @override
   void initState() {
     super.initState();
-    // BluetoothBLE.registerCallback(_handleDataReceived);
-    // BluetoothBLE.connectToDevice();
+    BluetoothBLE.registerCallback(_handleDataReceived);
+    BluetoothBLE.connectToDevice();
     initDatabase();
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      updateSleepState();
+    });
   }
 
   @override
   void dispose() {
-    // BluetoothBLE.unregisterCallback(_handleDataReceived);
-    // BluetoothBLE.disconnectedDevice();
+    BluetoothBLE.unregisterCallback(_handleDataReceived);
+    BluetoothBLE.disconnectedDevice();
     super.dispose();
   }
 
@@ -73,11 +83,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     Database database = await openDatabase(path, version: 1);
 
+    DateTime startDate = DateTime(2024, 5, 2, 0, 0, 0);
+    DateTime endDate = startDate.add(const Duration(hours: 8));
+
     await database.transaction((txn) async {
-      for (int i = 0; i < 5; i++) {
+      for (DateTime dateTime = startDate;
+          dateTime.isBefore(endDate);
+          dateTime = dateTime.add(const Duration(seconds: 30))) {
         await txn.rawInsert(
           'INSERT INTO DATA(timestamp, spo2, heartRate, bodyTemperature) VALUES(?, ?, ?, ?)',
-          ['2024-05-02 09:05:10', 98, 75, 37.6],
+          [dateTime.toIso8601String(), 98, 75, 37.6],
         );
       }
     });
@@ -100,6 +115,39 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     await database.close();
+  }
+
+  Future<void> deleteData() async {
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'SQMS.db');
+
+    Database database = await openDatabase(path, version: 1);
+
+    await database.rawDelete('DELETE FROM DATA');
+
+    await database.close();
+  }
+
+  Future<void> updateSleepState() async {
+    try {
+      final response = await http.get(Uri.parse("http://192.168.1.109:5000"));
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        if (responseData['status'] == "running") {
+          isSleeping = true;
+          developer.log("User is sleeping", name: 'debug.home');
+        } else {
+          isSleeping = false;
+          developer.log("User is not sleeping", name: 'debug.home');
+        }
+      } else {
+        developer.log(
+            'GET request failed with status code: ${response.statusCode}',
+            name: 'debug.home');
+      }
+    } catch (error) {
+      developer.log('Error making GET request: $error', name: 'debug.home');
+    }
   }
 
   @override
@@ -177,6 +225,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           ElevatedButton(
                             onPressed: () => readData(),
                             child: const Text('read data'),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () => deleteData(),
+                            child: const Text('delete data'),
                           ),
                           const SizedBox(height: 20),
                         ],
