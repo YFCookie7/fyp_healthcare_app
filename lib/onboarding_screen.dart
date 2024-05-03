@@ -224,32 +224,20 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   Future<void> createProfile() async {
     setFirstLaunchFlag(false);
-    var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'profile.db');
 
-    developer.log("Database stored in $path", name: "debug.onboarding_screen");
-    Database database = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-      await db
-          .execute('CREATE TABLE User (id INTEGER PRIMARY KEY, username TEXT)');
-    });
-
-    const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    final random = Random();
-    String result = '';
-
-    for (int i = 0; i < 5; i++) {
-      result += characters[random.nextInt(characters.length)];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? username = prefs.getString('username');
+    if (username == null) {
+      const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      final random = Random();
+      String randomLetter = '';
+      for (int i = 0; i < 5; i++) {
+        randomLetter += characters[random.nextInt(characters.length)];
+      }
+      await prefs.setString('username', "user_$randomLetter");
+      developer.log("User user_$randomLetter created!",
+          name: "debug.onboarding");
     }
-    String username = 'user_$result';
-
-    await database.transaction((txn) async {
-      int id1 =
-          await txn.rawInsert('INSERT INTO User(username) VALUES("$username")');
-      developer.log('Created a user record: $id1',
-          name: "debug.onboarding_screen");
-    });
-    await database.close();
   }
 }
 

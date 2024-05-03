@@ -25,11 +25,6 @@ class SplashScreen extends StatelessWidget {
           (route) => false,
         );
       }
-      // Navigator.pushAndRemoveUntil(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => const OnBoardingScreen()),
-      //   (route) => false,
-      // );
     });
 
     return Scaffold(
