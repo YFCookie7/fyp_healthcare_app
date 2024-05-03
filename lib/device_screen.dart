@@ -21,7 +21,7 @@ class DeviceScreen extends StatefulWidget {
 class _DeviceScreenState extends State<DeviceScreen> {
   final pi_address = 'http://192.168.1.109:5000';
   String receivedData = '';
-  String bt_status_animation = "assets/lottie/tick_lottie.json";
+  String bt_status_animation = "assets/lottie/cross_lottie.json";
   String pi_status_animation = "assets/lottie/tick_lottie.json";
 
   @override

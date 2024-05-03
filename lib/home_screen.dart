@@ -12,6 +12,7 @@ import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'dart:developer' as developer;
 import 'dart:math';
 import 'package:path/path.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -21,9 +22,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  String textbox = 'Hi';
+  String textbox = 'Latest sleep record';
   late final String piAddress;
   bool? isSleeping;
+  List<DataPoint> data = [];
 
   @override
   void initState() {
@@ -34,6 +36,28 @@ class _HomeScreenState extends State<HomeScreen> {
     Timer.periodic(const Duration(seconds: 5), (timer) {
       updateSleepState();
     });
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'SQMS.db');
+
+    Database database = await openDatabase(path, version: 1);
+
+    List<Map<String, dynamic>> result =
+        await database.rawQuery('SELECT * FROM DATA');
+
+    setState(() {
+      data = result
+          .map<DataPoint>((row) => DataPoint(
+                DateTime.parse(row['timestamp']),
+                row['spo2'],
+              ))
+          .toList();
+    });
+
+    await database.close();
   }
 
   @override
@@ -90,13 +114,48 @@ class _HomeScreenState extends State<HomeScreen> {
       for (DateTime dateTime = startDate;
           dateTime.isBefore(endDate);
           dateTime = dateTime.add(const Duration(seconds: 30))) {
+        Random random = Random();
+        int spo2 = (85 + random.nextInt(16));
+        int heartRate = (40 + random.nextInt(20));
+        double bodyTemperature = 35 + random.nextDouble() * (37 - 35);
+
         await txn.rawInsert(
           'INSERT INTO DATA(timestamp, spo2, heartRate, bodyTemperature) VALUES(?, ?, ?, ?)',
-          [dateTime.toIso8601String(), 98, 75, 37.6],
+          [dateTime.toIso8601String(), spo2, heartRate, bodyTemperature],
         );
       }
     });
 
+    await database.close();
+  }
+
+  Future<void> getSleepRecordsTimestamp() async {
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'SQMS.db');
+
+    Database database = await openDatabase(path, version: 1);
+
+    List<Map<String, dynamic>> firstRecordResult = await database
+        .rawQuery('SELECT timestamp FROM data ORDER BY timestamp ASC LIMIT 1');
+    DateTime? firstTimestamp;
+    if (firstRecordResult.isNotEmpty) {
+      firstTimestamp = DateTime.parse(firstRecordResult[0]['timestamp']);
+    }
+
+    List<Map<String, dynamic>> lastRecordResult = await database
+        .rawQuery('SELECT timestamp FROM data ORDER BY timestamp DESC LIMIT 1');
+    DateTime? lastTimestamp;
+    if (lastRecordResult.isNotEmpty) {
+      lastTimestamp = DateTime.parse(lastRecordResult[0]['timestamp']);
+    }
+    developer.log('Timestamp of the first sleep record: $firstTimestamp',
+        name: 'debug.home');
+    developer.log('Timestamp of the last sleep record: $lastTimestamp',
+        name: 'debug.home');
+
+    setState(() {
+      textbox = "Latest sleep record: \n$firstTimestamp - \n$lastTimestamp";
+    });
     await database.close();
   }
 
@@ -216,20 +275,36 @@ class _HomeScreenState extends State<HomeScreen> {
                             textbox,
                             style: const TextStyle(fontSize: 20),
                           ),
+                          SfCartesianChart(
+                            primaryXAxis: DateTimeAxis(),
+                            series: <CartesianSeries>[
+                              SplineSeries<DataPoint, DateTime>(
+                                dataSource: data,
+                                xValueMapper: (DataPoint data, _) =>
+                                    data.timestamp,
+                                yValueMapper: (DataPoint data, _) => data.spo2,
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () => insertData(),
-                            child: const Text('insert data'),
+                            child: const Text('insert test data'),
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () => readData(),
-                            child: const Text('read data'),
+                            child: const Text('read test data'),
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () => deleteData(),
                             child: const Text('delete data'),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () => getSleepRecordsTimestamp(),
+                            child: const Text('Get data'),
                           ),
                           const SizedBox(height: 20),
                         ],
@@ -242,4 +317,11 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class DataPoint {
+  final DateTime timestamp;
+  final int spo2;
+
+  DataPoint(this.timestamp, this.spo2);
 }
