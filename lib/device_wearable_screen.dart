@@ -89,9 +89,8 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   @override
   void initState() {
     super.initState();
-    BluetoothBLE.registerCallback(_handleDataReceived);
-    BluetoothBLE.connectToDevice();
-    initDatabase();
+    // BluetoothBLE.registerCallback(_handleDataReceived);
+    // BluetoothBLE.connectToDevice();
     // titleText = await BluetoothBLE.connectToDevice();
 
     // if(await BluetoothBLE.isConnected())
@@ -112,8 +111,8 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
 
   @override
   void dispose() {
-    BluetoothBLE.unregisterCallback(_handleDataReceived);
-    BluetoothBLE.disconnectedDevice();
+    // BluetoothBLE.unregisterCallback(_handleDataReceived);
+    // BluetoothBLE.disconnectedDevice();
     super.dispose();
   }
 
@@ -124,7 +123,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
 
       DateTime now = DateTime.now();
       nowSecond = now.second;
-      now10Millisecond = (now.millisecond/10).floor();
+      now10Millisecond = (now.millisecond / 10).floor();
 
       if (nowSecond / 2 != lastSecond / 2) {
         redNowMax = redNextMax;
@@ -175,80 +174,68 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
         spo2 = 0;
       }
 
-      int i=last10Millisecond;
-      int j=lastSecond;
+      int i = last10Millisecond;
+      int j = lastSecond;
 
-      while(i!=now10Millisecond || j!=nowSecond)
-      {
-        bufferIr[i+(j%3)*100] = nowIr;
-        bufferRed[i+(j%3)*100] = nowRed;
+      while (i != now10Millisecond || j != nowSecond) {
+        bufferIr[i + (j % 3) * 100] = nowIr;
+        bufferRed[i + (j % 3) * 100] = nowRed;
         //heartbeatValue_double = i+(j%3)*100;
         i++;
-        if(i>99)
-        {
-          i=0;
+        if (i > 99) {
+          i = 0;
           j++;
-          if(j>59)
-          {
-            j=0;
+          if (j > 59) {
+            j = 0;
           }
           //if it passes through the 300th second
-          if(j%3==0 && i==0)
-          {
+          if (j % 3 == 0 && i == 0) {
             //start HR calculation for the last 3 seconds
             int firstMax = 0;
             int secondMax = 0;
             List<int> maxPoints = [];
-            for(int count=1; count<299; count++)
-            {
+            for (int count = 1; count < 299; count++) {
               //this is a max point
-              if(bufferIr[count-1]<=bufferIr[count] && bufferIr[count+1]<=bufferIr[count])
-              {
+              if (bufferIr[count - 1] <= bufferIr[count] &&
+                  bufferIr[count + 1] <= bufferIr[count]) {
                 int numSmallerDataPast = 0;
                 int numSmallerDataFuture = 0;
                 int numDataPast = 0;
                 int numDataFuture = 0;
-                for(int k=1; k<30; k++)
-                {
-                  if(count+k<=299)
-                  {
+                for (int k = 1; k < 30; k++) {
+                  if (count + k <= 299) {
                     numDataFuture++;
-                    if(bufferIr[count]>bufferIr[count+k])
-                    {
+                    if (bufferIr[count] > bufferIr[count + k]) {
                       numSmallerDataFuture++;
                     }
                   }
-                  if(count-k>=0)
-                  {
+                  if (count - k >= 0) {
                     numDataPast++;
-                    if(bufferIr[count]>=bufferIr[count-k])
-                    {
+                    if (bufferIr[count] >= bufferIr[count - k]) {
                       numSmallerDataPast++;
                     }
                   }
                 }
 
-                if(numSmallerDataFuture/numDataFuture>=0.95 && numSmallerDataPast/numDataPast>=0.95)
-                {
+                if (numSmallerDataFuture / numDataFuture >= 0.95 &&
+                    numSmallerDataPast / numDataPast >= 0.95) {
                   maxPoints.add(count);
-                  count = count+30;
+                  count = count + 30;
                 }
               }
             }
             int maxPointCount = 1;
             int interval = 0;
 
-            if(maxPoints.isNotEmpty && redNowMin>4096 && irNowMin>4096)
-            {
-              while(maxPointCount<maxPoints.length)
-              {
-                interval = interval + (maxPoints[maxPointCount]-maxPoints[maxPointCount-1]);
+            if (maxPoints.isNotEmpty && redNowMin > 4096 && irNowMin > 4096) {
+              while (maxPointCount < maxPoints.length) {
+                interval = interval +
+                    (maxPoints[maxPointCount] - maxPoints[maxPointCount - 1]);
                 maxPointCount++;
               }
-              heartbeatValue_double = 60/(interval/(100*(maxPointCount-1)));
-            }
-            else
-            {
+              heartbeatValue_double =
+                  60 / (interval / (100 * (maxPointCount - 1)));
+            } else {
               heartbeatValue_double = 0;
             }
             //tb_heartrate = "$heartbeatValue_double bpm";
@@ -276,13 +263,6 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       tb_roomtemp = "${roomtempValue.toStringAsFixed(1)}°C";
       // tb_heartrate = heartbeatValue.toString();
 
-      addRecord(
-        timestamp: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
-        spo2: spo2.round(),
-        heartRate: heartbeatValue.toInt(),
-        bodyTemperature: nowTempO.toDouble(),
-      );
-
       // debug purpose
       // tempValue = 34 +
       //     Random().nextDouble() *
@@ -293,75 +273,7 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
       //     heartbeatValue.toDouble(); // replace this with actual temperature
       // developer.log(heartbeatValue_double.toString(),
       //     name: 'debug.device_watch');
-
     });
-  }
-
-  Future<void> initDatabase() async {
-    final database = openDatabase(
-      join(await getDatabasesPath(), 'data.db'),
-      onCreate: (db, version) {
-        return createTable(db);
-      },
-      version: 1,
-    );
-
-    final db = await database;
-    final List<Map<String, dynamic>> tables = await db.rawQuery(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='DATA';");
-
-    if (tables.isNotEmpty) {
-      developer.log("Table exists", name: 'debug.device_watch');
-    } else {
-      await createTable(db);
-      developer.log("Table created", name: 'debug.device_watch');
-    }
-  }
-
-  Future<void> createTable(Database db) async {
-    await db.execute('''
-    CREATE TABLE DATA (
-      id INTEGER PRIMARY KEY,
-      timestamp TEXT,
-      spo2 INTEGER,
-      heartRate INTEGER,
-      bodyTemperature REAL
-    )
-  ''');
-  }
-
-  Future<void> addRecord({
-    required String timestamp,
-    required int spo2,
-    required int heartRate,
-    required double bodyTemperature,
-  }) async {
-    final database = openDatabase(
-      join(await getDatabasesPath(), 'DATA.db'),
-      version: 1,
-    );
-
-    final db = await database;
-
-    await db.insert(
-      'DATA',
-      {
-        'timestamp': timestamp,
-        'spo2': spo2,
-        'heartRate': heartRate,
-        'bodyTemperature': bodyTemperature,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-    developer.log("successfully added record", name: 'debug.device_watch');
-  }
-
-  Future<Map<String, dynamic>?> getRecord() async {
-    Database database = await openDatabase('data.db');
-    List<Map<String, dynamic>> result = await database.rawQuery('''
-    SELECT * FROM DATA ORDER BY timestamp DESC LIMIT 1
-  ''');
-    return result.isNotEmpty ? result.first : null;
   }
 
   @override

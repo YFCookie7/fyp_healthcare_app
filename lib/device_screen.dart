@@ -177,14 +177,19 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       const SizedBox(height: 120.0),
                       GestureDetector(
                         onTap: () {
-                          BluetoothBLE.unregisterCallback(_handleDataReceived);
-                          BluetoothBLE.disconnectedDevice();
+                          // BluetoothBLE.unregisterCallback(_handleDataReceived);
+                          // BluetoothBLE.disconnectedDevice();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const WearableDeviceScreen()),
+                          );
+                          // connection is still alive after push
                           // Navigator.push(
                           //   context,
                           //   MaterialPageRoute(
-                          //       builder: (context) =>
-                          //           const WearableDeviceScreen())
-                          //           ,
+                          //       builder: (context) => const SettingScreen()),
                           // );
                         },
                         child: Container(
@@ -286,7 +291,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                           // Navigator.push(
                           //   context,
                           //   MaterialPageRoute(
-                          //       builder: (context) => SettingScreen()),
+                          //       builder: (context) => const SettingScreen()),
                           // );
                           checkPiStatus();
                         },

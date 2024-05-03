@@ -12,6 +12,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:encrypt/encrypt.dart' as encrypter;
 import 'package:fyp_healthcare_app/setting_screen.dart';
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
+import 'package:path/path.dart' as path;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -100,10 +101,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     developer.log(decrypted, name: "debug.profile");
     developer.log(encrypted.base64, name: "debug.profile");
 
+    var databasesPath2 = await getDatabasesPath();
+    String databasePath2 = join(databasesPath2, 'SQMS.db');
+    List<int> dbBytes = await File(databasePath2).readAsBytes();
+
+    String dbBytesBase64 = base64Encode(dbBytes);
+
+    final encryption2 = encrypter.Encrypter(encrypter.AES(key));
+    final encrypted2 = encryption2.encrypt(dbBytesBase64, iv: ivv);
+
     String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
     if (selectedDirectory != null) {
       final File file = File('$selectedDirectory/$username.dat');
       await file.writeAsBytes(encrypted.bytes);
+
+      final File file2 = File('$selectedDirectory/SQMS_db.dat');
+      await file2.writeAsBytes(encrypted2.bytes);
     }
 
     Fluttertoast.showToast(
@@ -122,25 +135,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (result != null) {
       String? filePath = result.files.single.path;
       developer.log("${result.files.single.path}", name: "debug.profile");
+      if (path.basename(filePath!) == 'SQMS_db.dat') {
+        Uint8List encryptedBytes = await File(filePath).readAsBytes();
+        final encrypter.Encrypter encryption =
+            encrypter.Encrypter(encrypter.AES(key));
 
-      Uint8List encryptedBytes = await File(filePath!).readAsBytes();
-      final encrypter.Encrypter encryption =
-          encrypter.Encrypter(encrypter.AES(key));
+        final encrypted = encrypter.Encrypted(encryptedBytes);
+        final decrypted = encryption.decrypt(encrypted, iv: ivv);
 
-      final encrypted = encrypter.Encrypted(encryptedBytes);
-      final decrypted = encryption.decrypt(encrypted, iv: ivv);
+        List<int> dbBytes = base64Decode(decrypted);
 
-      final decryptedData = jsonDecode(decrypted);
-      updateUsername(decryptedData['username']);
+        var databasesPath = await getDatabasesPath();
+        String databasePath = path.join(databasesPath, 'SQMS.db');
 
-      Fluttertoast.showToast(
-          msg: "Sucessfully import the data ${decryptedData['username']}",
+        await File(databasePath).writeAsBytes(dbBytes);
+
+        Fluttertoast.showToast(
+          msg: "Successfully imported the data",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           timeInSecForIosWeb: 1,
           backgroundColor: Colors.red,
           textColor: Colors.white,
-          fontSize: 16.0);
+          fontSize: 16.0,
+        );
+      } else {
+        Uint8List encryptedBytes = await File(filePath!).readAsBytes();
+        final encrypter.Encrypter encryption =
+            encrypter.Encrypter(encrypter.AES(key));
+
+        final encrypted = encrypter.Encrypted(encryptedBytes);
+        final decrypted = encryption.decrypt(encrypted, iv: ivv);
+
+        final decryptedData = jsonDecode(decrypted);
+        updateUsername(decryptedData['username']);
+
+        Fluttertoast.showToast(
+            msg: "Sucessfully import the profile ${decryptedData['username']}",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0);
+      }
     } else {
       Fluttertoast.showToast(
           msg: "Invalid file selected",
