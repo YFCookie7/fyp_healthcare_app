@@ -30,7 +30,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
     // BluetoothBLE.registerCallback(_handleDataReceived);
     // BluetoothBLE.connectToDevice();
     // _checkBtStatus();
-    checkPiStatus();
+    // checkPiStatus();
   }
 
   @override

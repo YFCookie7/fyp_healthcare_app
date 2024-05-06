@@ -34,9 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
     BluetoothBLE.registerCallback(_handleDataReceived);
     BluetoothBLE.connectToDevice();
     initDatabase();
-    Timer.periodic(const Duration(seconds: 5), (timer) {
-      updateSleepState();
-    });
+    // Timer.periodic(const Duration(seconds: 5), (timer) {
+    //   updateSleepState();
+    // });
     fetchData();
   }
 
