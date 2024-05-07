@@ -14,6 +14,7 @@ import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'dart:math';
 import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'dart:developer' as developer;
+import 'package:fyp_healthcare_app/globals.dart';
 
 class WearableDeviceScreen extends StatefulWidget {
   const WearableDeviceScreen({Key? key}) : super(key: key);
@@ -23,90 +24,25 @@ class WearableDeviceScreen extends StatefulWidget {
 }
 
 class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
-  String receivedData = '';
-  String textbox = 'Hi';
-  double tempValue = 37.0;
-  double roomtempValue = 30.0;
-  double heartbeatValue = 60;
-  double heartbeatValue_double = 0.0;
-  double tempAvalue = 24.0;
-  String tb_gyroX = '0';
-  String tb_gyroY = '0';
-  String tb_gyroZ = '0';
-  String tb_spo2 = '0%';
-  String tb_temp = '0';
-  String tb_roomtemp = '0';
-  String tb_heartrate = '0';
+  // temp value
+  String tb_gyroX = '1';
+  String tb_gyroY = '2';
+  String tb_gyroZ = '3';
+  double tempValue = 38.2;
+  double heartbeatValue_double = 63.5;
 
-  String titleText = "Connecting to device";
-
-  var bufferIr = List<int>.filled(300, 0);
-  var bufferRed = List<int>.filled(300, 0);
-
+  String tb_roomtemp = '31.2';
   double spo2 = 50;
-  //double hr = 0;
-  int now10Millisecond = 0;
-  int last10Millisecond = 0;
-
-  int nowRed = 0;
-  int lastRed = 0;
-  int nowIr = 0;
-  int lastIr = 0;
-  int nowTempA = 0;
-  int lastTempA = 0;
-  int nowTempO = 0;
-  int lastTempO = 0;
-  int nowGX = 0;
-  int lastGX = 0;
-  int nowGY = 0;
-  int lastGY = 0;
-  int nowGZ = 0;
-  int lastGZ = 0;
-
-  int redNowMax = 65535;
-  int irNowMax = 65535;
-  int redNextMax = 0;
-  int irNextMax = 0;
-
-  int redNowMin = 0;
-  int irNowMin = 0;
-  int redNextMin = 65535;
-  int irNextMin = 65535;
-
-  int nowSecond = 0;
-  int lastSecond = 0;
-
-  /*
-  String redText = "redText";
-  String irText = "irText";
-  String tempAText = "tempAText";
-  String tempOText = "tempOText";
-  String gyroXText = "gyroXText";
-  String gyroYText = "gyroYText";
-  String gyroZText = "gyroZText";
-  */
+  String tb_spo2 = '88%';
 
   @override
   void initState() {
     super.initState();
     // BluetoothBLE.registerCallback(_handleDataReceived);
     // BluetoothBLE.connectToDevice();
-    // titleText = await BluetoothBLE.connectToDevice();
-
-    // if(await BluetoothBLE.isConnected())
-    // {
-    //   await BluetoothBLE.readDataStream();
-    // }
-
-    // const oneSec = Duration(seconds: 1);
-    // Timer.periodic(oneSec, (Timer t) async {
-    //   if (await BluetoothBLE.isConnected()) {
-    //     BluetoothBLE.registerCallback(_handleDataReceived);
-    //   } else {
-    //     BluetoothBLE.unregisterCallback(_handleDataReceived);
-    //     // titleText = await BluetoothBLE.connectToDevice();
-    //   }
-    // });
+    Timer.periodic(const Duration(seconds: 2), (timer) {
+      updateBioReading();
+    });
   }
 
   @override
@@ -116,163 +52,17 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
     super.dispose();
   }
 
-  void _handleDataReceived(String data) {
+  Future<void> updateBioReading() async {
+    // developer.log(tb_gyroX, name: 'debug.device_watch');
     setState(() {
-      textbox = "$data ${Random().nextInt(1000)}";
-      developer.log(data, name: 'debug.device_watch');
-
-      DateTime now = DateTime.now();
-      nowSecond = now.second;
-      now10Millisecond = (now.millisecond / 10).floor();
-
-      if (nowSecond / 2 != lastSecond / 2) {
-        redNowMax = redNextMax;
-        redNowMin = redNextMin;
-        redNextMax = 0;
-        redNextMin = 65535;
-
-        irNowMax = irNextMax;
-        irNowMin = irNextMin;
-        irNextMax = 0;
-        irNextMin = 65535;
-      }
-
-      if (data.length == 14) {
-        List<int> datum = data.codeUnits;
-        nowRed = datum[1] * 256 + datum[0];
-        nowIr = datum[3] * 256 + datum[2];
-        nowTempA = datum[5] * 256 + datum[4];
-        nowTempO = datum[7] * 256 + datum[6];
-        nowGX = datum[9] * 256 + datum[8];
-        nowGY = datum[11] * 256 + datum[10];
-        nowGZ = datum[13] * 256 + datum[12];
-      }
-
-      if (nowIr > irNextMax) {
-        irNextMax = nowIr;
-      }
-      if (nowIr < irNextMin) {
-        irNextMin = nowIr;
-      }
-      if (nowRed > redNextMax) {
-        redNextMax = nowRed;
-      }
-      if (nowRed < redNextMin) {
-        redNextMin = nowRed;
-      }
-      roomtempValue = nowTempA / 50 - 273.15;
-      tempValue = nowTempO / 50 - 273.15;
-
-      if (nowIr > 4096 && nowRed > 4096) {
-        //spo2 = 110-(25*(nowRed-redNowMin)/redNowMin)/((nowIr-irNowMin)/irNowMin);
-        spo2 = 110 -
-            (25 *
-                (nowRed - redNowMin) *
-                irNowMin /
-                (redNowMin * (nowIr - irNowMin)));
-      } else {
-        spo2 = 0;
-      }
-
-      int i = last10Millisecond;
-      int j = lastSecond;
-
-      while (i != now10Millisecond || j != nowSecond) {
-        bufferIr[i + (j % 3) * 100] = nowIr;
-        bufferRed[i + (j % 3) * 100] = nowRed;
-        //heartbeatValue_double = i+(j%3)*100;
-        i++;
-        if (i > 99) {
-          i = 0;
-          j++;
-          if (j > 59) {
-            j = 0;
-          }
-          //if it passes through the 300th second
-          if (j % 3 == 0 && i == 0) {
-            //start HR calculation for the last 3 seconds
-            int firstMax = 0;
-            int secondMax = 0;
-            List<int> maxPoints = [];
-            for (int count = 1; count < 299; count++) {
-              //this is a max point
-              if (bufferIr[count - 1] <= bufferIr[count] &&
-                  bufferIr[count + 1] <= bufferIr[count]) {
-                int numSmallerDataPast = 0;
-                int numSmallerDataFuture = 0;
-                int numDataPast = 0;
-                int numDataFuture = 0;
-                for (int k = 1; k < 30; k++) {
-                  if (count + k <= 299) {
-                    numDataFuture++;
-                    if (bufferIr[count] > bufferIr[count + k]) {
-                      numSmallerDataFuture++;
-                    }
-                  }
-                  if (count - k >= 0) {
-                    numDataPast++;
-                    if (bufferIr[count] >= bufferIr[count - k]) {
-                      numSmallerDataPast++;
-                    }
-                  }
-                }
-
-                if (numSmallerDataFuture / numDataFuture >= 0.95 &&
-                    numSmallerDataPast / numDataPast >= 0.95) {
-                  maxPoints.add(count);
-                  count = count + 30;
-                }
-              }
-            }
-            int maxPointCount = 1;
-            int interval = 0;
-
-            if (maxPoints.isNotEmpty && redNowMin > 4096 && irNowMin > 4096) {
-              while (maxPointCount < maxPoints.length) {
-                interval = interval +
-                    (maxPoints[maxPointCount] - maxPoints[maxPointCount - 1]);
-                maxPointCount++;
-              }
-              heartbeatValue_double =
-                  60 / (interval / (100 * (maxPointCount - 1)));
-            } else {
-              heartbeatValue_double = 0;
-            }
-            //tb_heartrate = "$heartbeatValue_double bpm";
-          }
-        }
-      }
-
-      // heartbeatValue = spo2;
-      lastRed = nowRed;
-      lastIr = nowIr;
-      lastTempA = nowTempA;
-      lastTempO = nowTempO;
-      lastGX = nowGX;
-      lastGY = nowGY;
-      lastGZ = nowGZ;
-      lastSecond = nowSecond;
-      last10Millisecond = now10Millisecond;
-
-      //heartbeatValue = nowSecond;
-      tb_gyroX = nowGX.toString();
-      tb_gyroY = nowGY.toString();
-      tb_gyroZ = nowGZ.toString();
-      tb_spo2 = "${spo2.round()} %";
-      tb_temp = nowTempO.toString();
-      tb_roomtemp = "${roomtempValue.toStringAsFixed(1)}°C";
-      // tb_heartrate = heartbeatValue.toString();
-
-      // debug purpose
-      // tempValue = 34 +
-      //     Random().nextDouble() *
-      //         (40 - 34); // replace this with actual temperature
-
-      // int heartbeatValue = Random().nextInt(31) + 60;
-      // heartbeatValue_double =
-      //     heartbeatValue.toDouble(); // replace this with actual temperature
-      // developer.log(heartbeatValue_double.toString(),
-      //     name: 'debug.device_watch');
+      tb_gyroX = tb_gyroX2;
+      tb_gyroY = tb_gyroY2;
+      tb_gyroZ = tb_gyroZ2;
+      tempValue = tempValue2;
+      heartbeatValue_double = heartbeatValue_double2;
+      tb_roomtemp = tb_roomtemp2;
+      spo2 = spo22;
+      tb_spo2 = tb_spo22;
     });
   }
 
@@ -687,69 +477,6 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
                 ),
               ),
             )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class readingHistoryContainer extends StatelessWidget {
-  String time;
-  String bodyTemp;
-  String spo2;
-  String heartrate;
-
-  readingHistoryContainer(
-      {required this.time,
-      required this.bodyTemp,
-      required this.spo2,
-      required this.heartrate});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        width: 400,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                    border: Border(right: BorderSide(color: Colors.grey))),
-                child: Center(
-                  child: Text(time),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                    border: Border(right: BorderSide(color: Colors.grey))),
-                child: Center(
-                  child: Text(bodyTemp),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                    border: Border(right: BorderSide(color: Colors.grey))),
-                child: Center(
-                  child: Text(spo2),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                child: Center(
-                  child: Text(heartrate),
-                ),
-              ),
-            ),
           ],
         ),
       ),
