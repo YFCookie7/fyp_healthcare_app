@@ -34,21 +34,24 @@ class _WearableDeviceScreenState extends State<WearableDeviceScreen> {
   String tb_roomtemp = '31.2';
   double spo2 = 50;
   String tb_spo2 = '88%';
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    // BluetoothBLE.registerCallback(_handleDataReceived);
-    // BluetoothBLE.connectToDevice();
-    Timer.periodic(const Duration(seconds: 2), (timer) {
+    _startTimer();
+  }
+
+  void _startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
       updateBioReading();
     });
   }
 
   @override
   void dispose() {
-    // BluetoothBLE.unregisterCallback(_handleDataReceived);
-    // BluetoothBLE.disconnectedDevice();
+    developer.log("WearableDeviceScreen disposed", name: 'debug.device_watch');
+    _timer?.cancel();
     super.dispose();
   }
 

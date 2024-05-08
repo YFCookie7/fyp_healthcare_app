@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:fyp_healthcare_app/alarm_screen.dart';
 import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
+import 'package:fyp_healthcare_app/device_pi_screen.dart';
 import 'package:fyp_healthcare_app/device_screen.dart';
 import 'package:fyp_healthcare_app/onboarding_screen.dart';
 import 'package:fyp_healthcare_app/alarm_screen.dart';
@@ -20,13 +21,15 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   String piAddress = await getPiAddress('raspberry');
-  developer.log('Raspberry Pi IP Address: $piAddress', name: 'debug_main');
+  developer.log('Raspberry Pi IP Address: $piAddress', name: 'debug.main');
 
   String storedPiAddress = prefs.getString('piAddress') ?? '';
+  developer.log('Raspberry Pi stored IP Address: $storedPiAddress',
+      name: 'debug.main');
   if (storedPiAddress != piAddress && piAddress != '') {
     prefs.setString('piAddress', piAddress);
     developer.log('New ip address record stored in shared preference',
-        name: 'debug_main');
+        name: 'debug.main');
   }
 
   await Alarm.init();

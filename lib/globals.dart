@@ -7,3 +7,5 @@ double heartbeatValue_double2 = 90;
 String tb_roomtemp2 = '31.2';
 double spo22 = 50;
 String tb_spo22 = '88%';
+
+bool isUserSleeping = false;

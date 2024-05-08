@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:fyp_healthcare_app/device_pi_screen.dart';
 import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 import 'package:fyp_healthcare_app/setting_screen.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -29,24 +30,13 @@ class _DeviceScreenState extends State<DeviceScreen> {
   @override
   void initState() {
     super.initState();
-    // BluetoothBLE.registerCallback(_handleDataReceived);
-    // BluetoothBLE.connectToDevice();
     _checkBtStatus();
     checkPiStatus();
   }
 
   @override
   void dispose() {
-    // BluetoothBLE.unregisterCallback(_handleDataReceived);
-    // BluetoothBLE.disconnectedDevice();
     super.dispose();
-  }
-
-  void _handleDataReceived(String data) {
-    developer.log(data, name: 'debug.device');
-    setState(() {
-      // developer.log(data, name: 'debug.device');
-    });
   }
 
   void _checkBtStatus() async {
@@ -183,20 +173,12 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       const SizedBox(height: 120.0),
                       GestureDetector(
                         onTap: () {
-                          // BluetoothBLE.unregisterCallback(_handleDataReceived);
-                          // BluetoothBLE.disconnectedDevice();
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
                                     const WearableDeviceScreen()),
                           );
-                          // connection is still alive after push
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => const SettingScreen()),
-                          // );
                         },
                         child: Container(
                           height: 250,
@@ -297,12 +279,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
                       const SizedBox(height: 40.0),
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //       builder: (context) => const SettingScreen()),
-                          // );
-                          checkPiStatus();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const PiDeviceScreen()),
+                          );
                         },
                         child: Container(
                           height: 250,

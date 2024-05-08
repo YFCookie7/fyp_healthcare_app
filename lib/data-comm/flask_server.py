@@ -13,7 +13,7 @@ def obtain_data():
     return response_data
 
 
-operating = "running"
+operating = False
 app_address = "192.168.1.53"
 start_time = None
 
