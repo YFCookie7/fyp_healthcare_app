@@ -6,8 +6,9 @@ A new Flutter project.
 improved profile
 improved alarm
 merge universal bt
+bt pair
+improved device screen
 
-bt configure
 pi sleep status 
 enhanced real time with feedback and histroy
 pi

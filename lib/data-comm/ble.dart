@@ -34,16 +34,25 @@ class BluetoothBLE {
     FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
 
     List<ScannedDevice> scannedDevices = [];
+    Set<String> uniqueDevice = {};
 
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
           ScanResult r = results.last;
-          if (r.advertisementData.advName != "") {
+          if (r.advertisementData.advName != "" &&
+              !uniqueDevice.contains(r.advertisementData.advName)) {
             ScannedDevice device = ScannedDevice(
                 deviceName: r.advertisementData.advName,
                 macAddress: r.device.remoteId.toString());
+            uniqueDevice.add(r.advertisementData.advName);
             scannedDevices.add(device);
+          } else if (!uniqueDevice.contains(r.device.remoteId.toString())) {
+            ScannedDevice device = ScannedDevice(
+                deviceName: r.device.remoteId.toString(),
+                macAddress: r.device.remoteId.toString());
+            scannedDevices.add(device);
+            uniqueDevice.add(r.device.remoteId.toString());
           }
           developer.log(
               '${r.device.remoteId}: "${r.advertisementData.advName}" found!',

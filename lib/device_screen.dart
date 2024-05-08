@@ -21,16 +21,18 @@ class DeviceScreen extends StatefulWidget {
 class _DeviceScreenState extends State<DeviceScreen> {
   final pi_address = 'http://192.168.1.109:5000';
   String receivedData = '';
-  String bt_status_animation = "assets/lottie/cross_lottie.json";
+  String bt_status_animation = "assets/lottie/tick_lottie.json";
   String pi_status_animation = "assets/lottie/tick_lottie.json";
+  bool pi_isVisible = false;
+  bool bt_isVisible = false;
 
   @override
   void initState() {
     super.initState();
     // BluetoothBLE.registerCallback(_handleDataReceived);
     // BluetoothBLE.connectToDevice();
-    // _checkBtStatus();
-    // checkPiStatus();
+    _checkBtStatus();
+    checkPiStatus();
   }
 
   @override
@@ -52,12 +54,14 @@ class _DeviceScreenState extends State<DeviceScreen> {
       developer.log("Connected to device", name: 'debug.device');
       setState(() {
         bt_status_animation = "assets/lottie/tick_lottie.json";
+        bt_isVisible = true;
       });
     } else {
-      BluetoothBLE.connectToDevice();
+      // BluetoothBLE.connectToDevice();
       developer.log("Not connected to device", name: 'debug.device');
       setState(() {
         bt_status_animation = "assets/lottie/cross_lottie.json";
+        bt_isVisible = true;
       });
     }
   }
@@ -91,7 +95,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
               fontSize: 16.0);
         } else {
           pi_status_animation = "assets/lottie/cross_lottie.json";
-
           Fluttertoast.showToast(
               msg: "Smart alarm clock is not detected",
               toastLength: Toast.LENGTH_SHORT,
@@ -99,6 +102,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
               timeInSecForIosWeb: 1,
               fontSize: 16.0);
         }
+        pi_isVisible = true;
       });
     } catch (error) {
       developer.log('Error making GET request: $error', name: 'debug.device');
@@ -112,6 +116,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
             timeInSecForIosWeb: 1,
             fontSize: 16.0);
       });
+
+      pi_isVisible = true;
     }
   }
 
@@ -273,14 +279,17 @@ class _DeviceScreenState extends State<DeviceScreen> {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              Positioned(
-                                bottom: 50.0,
-                                right: 40.0,
-                                child: Lottie.asset(
-                                  bt_status_animation,
-                                  height: 100,
+                              Visibility(
+                                visible: bt_isVisible,
+                                child: Positioned(
+                                  bottom: 50.0,
+                                  right: 40.0,
+                                  child: Lottie.asset(
+                                    bt_status_animation,
+                                    height: 100,
+                                  ),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -375,14 +384,17 @@ class _DeviceScreenState extends State<DeviceScreen> {
                                   fit: BoxFit.cover,
                                 ),
                               ),
-                              Positioned(
-                                bottom: 50.0,
-                                right: 40.0,
-                                child: Lottie.asset(
-                                  pi_status_animation,
-                                  height: 100,
+                              Visibility(
+                                visible: pi_isVisible,
+                                child: Positioned(
+                                  bottom: 50.0,
+                                  right: 40.0,
+                                  child: Lottie.asset(
+                                    pi_status_animation,
+                                    height: 100,
+                                  ),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
