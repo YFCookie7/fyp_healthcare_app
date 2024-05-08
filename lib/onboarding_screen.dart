@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'package:fyp_healthcare_app/menu.dart';
 import 'package:fyp_healthcare_app/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +12,9 @@ import 'dart:developer' as developer;
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:select_dialog/select_dialog.dart';
 import 'dart:math';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);
@@ -68,8 +73,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       ),
     ];
 
-    return Scaffold(
-      body: Stack(
+    return MaterialApp(
+      builder: EasyLoading.init(),
+      home: Stack(
         children: [
           LiquidSwipe(
             pages: pages.map((page) => buildPage(context, page)).toList(),
@@ -120,14 +126,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             alignment: Alignment.topRight,
             child: TextButton(
               onPressed: () async {
-                grantPermission();
-                createProfile();
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Menu()),
-                  (route) => false,
-                );
-                ;
+                await grantPermission(context);
+
+                // createProfile();
+                // Navigator.pushAndRemoveUntil(
+                //   context,
+                //   MaterialPageRoute(builder: (context) => const Menu()),
+                //   (route) => false,
+                // );
               },
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
@@ -184,14 +190,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 color: Colors.blue,
               ),
               child: TextButton(
-                onPressed: () {
-                  grantPermission();
-                  createProfile();
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Menu()),
-                    (route) => false,
-                  );
+                onPressed: () async {
+                  await grantPermission(context);
+
+                  // createProfile();
+                  // Navigator.pushAndRemoveUntil(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => const Menu()),
+                  //   (route) => false,
+                  // );
                 },
                 child: const Text(
                   'Grant permission ',
@@ -212,14 +219,51 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     await prefs.setBool('first_launch', flag);
   }
 
-  Future<void> grantPermission() async {
-    Map<Permission, PermissionStatus> statuses = await [
+  Future<void> grantPermission(BuildContext context) async {
+    // Completer<void> scanCompleter = Completer<void>();
+
+    Map<Permission, PermissionStatus> status = await [
       Permission.location,
       Permission.storage,
       Permission.accessMediaLocation,
       Permission.bluetoothConnect,
       Permission.bluetoothScan,
     ].request();
+    EasyLoading.show(status: 'Searching for device...');
+
+    BluetoothBLE.scanForDevice().then((List<ScannedDevice> scannedDevices) {
+      developer.log("Bluetooth device scanned!", name: "debug.onboarding");
+      for (ScannedDevice device in scannedDevices) {
+        developer.log(
+            "Scanned device: Name - ${device.deviceName}, MAC Address - ${device.macAddress}",
+            name: "debug.onboarding");
+      }
+      EasyLoading.dismiss();
+      List<String> deviceNames =
+          scannedDevices.map((device) => device.deviceName).toList();
+      SelectDialog.showModal<String>(
+        context,
+        label: "Connect to smart watch",
+        items: deviceNames,
+        onChange: (String selectedDevice) async {
+          developer.log("Selected device: $selectedDevice",
+              name: "debug.onboarding");
+          await SharedPreferences.getInstance().then((prefs) {
+            prefs.setString('watch_name', selectedDevice);
+          });
+
+          createProfile();
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const Menu()),
+            (route) => false,
+          );
+        },
+      );
+      // scanCompleter.complete();
+    });
+
+    // await scanCompleter.future;
   }
 
   Future<void> createProfile() async {

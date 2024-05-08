@@ -33,6 +33,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   late SharedPreferences prefs;
   String dropdownValue = 'Adult';
   int optimal_hours = 8;
+  String tb_timeDiff = "8h 0min";
 
   var alarmSettings = AlarmSettings(
     id: 42,
@@ -270,6 +271,15 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                             startTime = startTime
                                                 .add(const Duration(hours: 12));
                                           }
+
+                                          Duration difference = selectedTime
+                                              .difference(startTime);
+                                          int hours = difference.inHours;
+                                          int minutes = difference.inMinutes
+                                              .remainder(60);
+
+                                          tb_timeDiff =
+                                              '${hours}h ${minutes}min';
                                           developer.log('Pointer 1: $value',
                                               name: 'debug_alarm');
                                           developer.log(
@@ -322,6 +332,15 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                             selectedTime = selectedTime
                                                 .add(const Duration(hours: 12));
                                           }
+
+                                          Duration difference = selectedTime
+                                              .difference(startTime);
+                                          int hours = difference.inHours;
+                                          int minutes = difference.inMinutes
+                                              .remainder(60);
+
+                                          tb_timeDiff =
+                                              '${hours}h ${minutes}min';
                                           developer.log(
                                               'final Time: $selectedTime',
                                               name: 'debug_alarm');
@@ -376,8 +395,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              "Optimal sleep hours:\n $optimal_hours hours",
-                              style: const TextStyle(fontSize: 16),
+                              tb_timeDiff,
+                              style: const TextStyle(fontSize: 20),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(width: 25),
@@ -398,15 +417,19 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                       name: 'debug_alarm');
                                   switch (newValue) {
                                     case 'Children':
+                                      tb_timeDiff = '10h 0min';
                                       optimal_hours = 10;
                                       break;
                                     case 'Teenage':
+                                      tb_timeDiff = '9h 0min';
                                       optimal_hours = 9;
                                       break;
                                     case 'Adult':
+                                      tb_timeDiff = '8h 0min';
                                       optimal_hours = 8;
                                       break;
                                     case 'Elderly':
+                                      tb_timeDiff = '8h 0min';
                                       optimal_hours = 8;
                                       break;
                                   }

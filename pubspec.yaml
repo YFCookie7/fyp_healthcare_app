@@ -32,6 +32,8 @@ dependencies:
   alarm: ^3.1.0
   intl: ^0.19.0
   syncfusion_flutter_charts: ^25.1.42+1
+  select_dialog: ^2.0.1
+  flutter_easyloading: ^3.0.5
 
 
 dev_dependencies:

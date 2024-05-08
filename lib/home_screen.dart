@@ -95,7 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _handleDataReceived(String data) {
     setState(() {
-      textbox = "$data ${Random().nextInt(1000)}";
+      // textbox = "$data ${Random().nextInt(1000)}";
       // developer.log(data, name: 'debug.device_watch');
 
       DateTime now = DateTime.now();
@@ -316,9 +316,6 @@ class _HomeScreenState extends State<HomeScreen> {
     developer.log('Timestamp of the last sleep record: $lastTimestamp',
         name: 'debug.home');
 
-    setState(() {
-      textbox = "Latest sleep record: \n$firstTimestamp - \n$lastTimestamp";
-    });
     await database.close();
   }
 

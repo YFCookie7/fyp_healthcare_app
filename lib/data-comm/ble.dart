@@ -6,14 +6,14 @@ import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'dart:math';
 
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 typedef DataReceivedCallback = void Function(String data);
 
 class BluetoothBLE {
   static const String deviceName = "SLEEP_TRACKER_BLE";
   static const String deviceAddress = "FF:FF:FF:FF:FF:FF";
-  // static const String deviceName = "HMSoft";
-  // static const String deviceAddress = "FF:FF:FF:FF:FF:FF";
+
   static late BluetoothDevice _device;
   static late StreamSubscription<BluetoothConnectionState>?
       _connectionSubscription;
@@ -28,6 +28,48 @@ class BluetoothBLE {
 
   static void unregisterCallback(DataReceivedCallback callback) {
     callbacks_list.remove(callback);
+  }
+
+  static Future<List<ScannedDevice>> scanForDevice() async {
+    FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
+
+    List<ScannedDevice> scannedDevices = [];
+
+    var subscription = FlutterBluePlus.onScanResults.listen(
+      (results) async {
+        if (results.isNotEmpty) {
+          ScanResult r = results.last;
+          if (r.advertisementData.advName != "") {
+            ScannedDevice device = ScannedDevice(
+                deviceName: r.advertisementData.advName,
+                macAddress: r.device.remoteId.toString());
+            scannedDevices.add(device);
+          }
+          developer.log(
+              '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
+              name: 'debug.ble');
+
+          // if (r.advertisementData.advName == deviceName) {
+          // developer.log(
+          //     '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
+          //     name: 'debug.ble');
+          //   FlutterBluePlus.stopScan();
+          // }
+        }
+      },
+      onError: (e) => developer.log(e.toString(), name: 'debug.ble'),
+    );
+
+    await FlutterBluePlus.adapterState
+        .where((val) => val == BluetoothAdapterState.on)
+        .first;
+
+    await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
+
+    await FlutterBluePlus.isScanning.where((val) => val == false).first;
+
+    FlutterBluePlus.cancelWhenScanComplete(subscription);
+    return scannedDevices;
   }
 
   // Check connection state
@@ -63,13 +105,18 @@ class BluetoothBLE {
   // Connect to the device
   static Future<void> connectToDevice() async {
     FlutterBluePlus.setLogLevel(LogLevel.verbose, color: false);
+    String? deviceName2 = "";
+
+    await SharedPreferences.getInstance().then((prefs) {
+      deviceName2 = prefs.getString('watch_name');
+    });
     bool found = false;
     var subscription = FlutterBluePlus.onScanResults.listen(
       (results) async {
         if (results.isNotEmpty) {
           ScanResult r = results.last;
 
-          if (r.advertisementData.advName.toString() == deviceName) {
+          if (r.advertisementData.advName.toString() == deviceName2) {
             found = true;
             developer.log(
                 '${r.device.remoteId}: "${r.advertisementData.advName}" found!',
@@ -167,4 +214,11 @@ class BluetoothBLE {
       }
     }
   }
+}
+
+class ScannedDevice {
+  final String deviceName;
+  final String macAddress;
+
+  ScannedDevice({required this.deviceName, required this.macAddress});
 }
