@@ -8,8 +8,8 @@ improved alarm
 merge universal bt
 bt pair
 improved device screen
-
 pi sleep status 
-enhanced real time with feedback and histroy
+
+enhanced real time with feedback and history (table with comment history)
 pi
 sleep record (chart 7 days)

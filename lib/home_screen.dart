@@ -32,14 +32,12 @@ class _HomeScreenState extends State<HomeScreen> {
   // biosignal
   String receivedData = '';
   // String textbox = 'Hi';
-  double tempValue = 37.0;
-  double roomtempValue = 30.0;
   double heartbeatValue = 60;
   double heartbeatValue_double = 0.0;
   double tempAvalue = 24.0;
-  String tb_gyroX = '0';
-  String tb_gyroY = '0';
-  String tb_gyroZ = '0';
+  String tb_gyroX = '0'; // will be deprecated
+  String tb_gyroY = '0'; // will be deprecated
+  String tb_gyroZ = '0'; // will be deprecated
   String tb_spo2 = '0%';
   String tb_temp = '0';
   String tb_roomtemp = '0';
@@ -236,10 +234,7 @@ class _HomeScreenState extends State<HomeScreen> {
       tb_gyroY2 = nowGY.toString();
       tb_gyroZ2 = nowGZ.toString();
 
-      if (tempValue > 20 && tempValue < 50) {
-        tempValue2 = tempValue;
-      }
-
+      // will be deprecated
       if (roomtempValue > 20 && roomtempValue < 50) {
         tb_roomtemp2 = "${roomtempValue.toStringAsFixed(1)}°C";
       }

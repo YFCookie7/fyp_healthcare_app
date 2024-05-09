@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fyp_healthcare_app/device_pi_screen.dart';
+import 'package:fyp_healthcare_app/device_watch_screen.dart';
 import 'package:fyp_healthcare_app/device_wearable_screen.dart';
 import 'package:fyp_healthcare_app/setting_screen.dart';
 import 'package:glassmorphism/glassmorphism.dart';
@@ -177,7 +178,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) =>
-                                    const WearableDeviceScreen()),
+                                    const WatchDeviceScreen()),
                           );
                         },
                         child: Container(

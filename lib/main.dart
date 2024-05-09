@@ -9,7 +9,7 @@ import 'package:fyp_healthcare_app/alarm_screen.dart';
 import 'package:fyp_healthcare_app/setting_screen.dart';
 import 'package:fyp_healthcare_app/splash_screen.dart';
 import 'package:fyp_healthcare_app/menu.dart';
-import 'package:fyp_healthcare_app/device_wearable_screen.dart';
+import 'package:fyp_healthcare_app/device_watch_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:developer' as developer;
 import 'package:alarm/alarm.dart';
