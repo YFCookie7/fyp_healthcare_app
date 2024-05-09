@@ -34,6 +34,7 @@ dependencies:
   syncfusion_flutter_charts: ^25.1.42+1
   select_dialog: ^2.0.1
   flutter_easyloading: ^3.0.5
+  bottom_sheet: ^4.0.4
 
 
 dev_dependencies:
