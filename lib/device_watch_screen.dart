@@ -3,9 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'dart:developer' as developer;
 import 'package:fyp_healthcare_app/globals.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
@@ -41,27 +39,7 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
   ChartSeriesController? _chartSeriesController;
   int count = 0;
 
-  List<_ChartData> chartData = <_ChartData>[
-    // _ChartData(0, 0),
-    // _ChartData(1, 0),
-    // _ChartData(2, 0),
-    // _ChartData(3, 0),
-    // _ChartData(4, 0),
-    // _ChartData(5, 0),
-    // _ChartData(6, 0),
-    // _ChartData(7, 0),
-    // _ChartData(8, 0),
-    // _ChartData(9, 0),
-    // _ChartData(10, 0),
-    // _ChartData(11, 0),
-    // _ChartData(12, 0),
-    // _ChartData(13, 0),
-    // _ChartData(14, 0),
-    // _ChartData(15, 0),
-    // _ChartData(16, 0),
-    // _ChartData(17, 0),
-    // _ChartData(18, 0),
-  ];
+  List<_ChartData> chartData = <_ChartData>[];
 
   @override
   void initState() {
@@ -100,7 +78,6 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
         } else if (spo22 < 50) {
           tb_spo2 = "-";
         } else {
-          chartData.add(_ChartData(count, spo22.round()));
           tb_spo2 = spo22.round().toString();
         }
 
@@ -129,6 +106,20 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
           tb_tempA = "-";
         } else {
           tb_tempA = roomtempValue.toStringAsFixed(1);
+        }
+        switch (currMode) {
+          case "SPO2":
+            chartData.add(_ChartData(count, spo22.round()));
+            break;
+          case "HR":
+            chartData.add(_ChartData(count, heartbeatValue_double2.round()));
+            break;
+          case "TEMP_O":
+            chartData.add(_ChartData(count, tempValue.round()));
+            break;
+          case "TEMP_A":
+            chartData.add(_ChartData(count, roomtempValue.round()));
+            break;
         }
       });
     });
@@ -508,7 +499,7 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                              height: 200,
+                              height: 250,
                               width: 280,
                               child: SfCartesianChart(
                                 primaryYAxis: NumericAxis(
@@ -517,6 +508,7 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                                 ),
                                 series: <LineSeries<_ChartData, int>>[
                                   LineSeries<_ChartData, int>(
+                                    name: currMode,
                                     onRendererCreated:
                                         (ChartSeriesController controller) {
                                       _chartSeriesController = controller;
@@ -528,6 +520,7 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                                         data.value,
                                   )
                                 ],
+                                legend: const Legend(isVisible: true),
                               ),
                             ),
                             const SizedBox(width: 20),
