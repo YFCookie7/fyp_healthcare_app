@@ -9,7 +9,7 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 1500), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final bool? firstLaunch = prefs.getBool('first_launch');
       if (firstLaunch == null || firstLaunch == true) {

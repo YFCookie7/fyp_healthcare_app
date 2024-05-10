@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp_healthcare_app/onboarding_screen.dart';
+import 'package:fyp_healthcare_app/splash_screen.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -288,12 +289,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: const Text('Cancel'),
                                 ),
                                 TextButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     // delete profile
+                                    Navigator.pop(context, 'Cancel');
+                                    SharedPreferences prefs =
+                                        await SharedPreferences.getInstance();
+                                    await prefs.clear();
 
                                     deleteDatabaseFile();
                                     initDatabase();
-                                    Navigator.pop(context, 'Cancel');
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const SplashScreen()));
                                   },
                                   child: const Text('Comfirm'),
                                 ),

@@ -176,7 +176,7 @@ class _PiDeviceScreenState extends State<PiDeviceScreen> {
                                   color: deviceStatusColor, size: 24)),
                           const SizedBox(width: 20),
                           const Text(
-                            "Recording:",
+                            "Sleeping:",
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 18),
                           ),

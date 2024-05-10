@@ -191,10 +191,6 @@ class BluetoothBLE {
         //if (characteristic.properties.read) {
         final subscription = characteristic.onValueReceived.listen((value) {
           String stringValue = String.fromCharCodes(value);
-          // developer.log("Received data: $stringValue ${Random().nextInt(1000)}",
-          //     name: 'debug.ble');
-          // invoke data callback
-          // onDataReceived?.call(stringValue);
           for (var callback in callbacks_list) {
             callback(stringValue);
           }

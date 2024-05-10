@@ -1,22 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
-import 'package:intl/intl.dart';
-
 import 'package:flutter/services.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
-import 'package:path/path.dart';
+import 'package:intl/intl.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:fyp_healthcare_app/data-comm/ble.dart';
-import 'dart:math';
-import 'package:fyp_healthcare_app/data-comm/bt_template.dart';
 import 'dart:developer' as developer;
 import 'package:fyp_healthcare_app/globals.dart';
 import 'package:bottom_sheet/bottom_sheet.dart';
+import 'package:fyp_healthcare_app/database.dart';
 
 class WatchDeviceScreen extends StatefulWidget {
   const WatchDeviceScreen({Key? key}) : super(key: key);
@@ -31,11 +24,50 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
   String tb_hr = '-';
   String tb_tempO = '-';
   String tb_tempA = '-';
+  double y_minimum = 50;
+  double y_maximum = 100;
+  double y_minimum_spo2 = 50;
+  double y_maximum_spo2 = 100;
+  double y_minimum_hr = 50;
+  double y_maximum_hr = 150;
+  double y_minimum_tempO = 32;
+  double y_maximum_tempO = 45;
+  double y_minimum_tempA = 10;
+  double y_maximum_tempA = 40;
+  String currMode = "SPO2";
+  List<DataHistory> dataHistory = [];
+
+  Timer? timer;
+  ChartSeriesController? _chartSeriesController;
+  int count = 0;
+
+  List<_ChartData> chartData = <_ChartData>[
+    // _ChartData(0, 0),
+    // _ChartData(1, 0),
+    // _ChartData(2, 0),
+    // _ChartData(3, 0),
+    // _ChartData(4, 0),
+    // _ChartData(5, 0),
+    // _ChartData(6, 0),
+    // _ChartData(7, 0),
+    // _ChartData(8, 0),
+    // _ChartData(9, 0),
+    // _ChartData(10, 0),
+    // _ChartData(11, 0),
+    // _ChartData(12, 0),
+    // _ChartData(13, 0),
+    // _ChartData(14, 0),
+    // _ChartData(15, 0),
+    // _ChartData(16, 0),
+    // _ChartData(17, 0),
+    // _ChartData(18, 0),
+  ];
 
   @override
   void initState() {
     super.initState();
     _refreshBioData();
+    refreshDataHistory();
   }
 
   @override
@@ -44,19 +76,31 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
     super.dispose();
   }
 
+  Future<void> refreshDataHistory() async {
+    dataHistory = await readRealTimeData();
+
+    setState(() {});
+  }
+
   void _refreshBioData() {
     _refreshBioDataTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
       developer.log(spo22.toString(), name: 'debug.watch');
       developer.log(tb_spo22, name: 'debug.watch');
       setState(() {
+        if (chartData.length == 20) {
+          chartData.removeAt(0);
+          _chartSeriesController?.updateDataSource(
+              addedDataIndexes: <int>[chartData.length - 1],
+              removedDataIndexes: <int>[0]);
+        }
+        count = count + 1;
         // spo2
         if (spo22 > 100) {
           tb_spo2 = "-";
         } else if (spo22 < 50) {
           tb_spo2 = "-";
-        } else if (spo22 == 100) {
-          tb_spo2 = "99";
         } else {
+          chartData.add(_ChartData(count, spo22.round()));
           tb_spo2 = spo22.round().toString();
         }
 
@@ -70,7 +114,7 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
         }
 
         // body temp
-        if (tempValue > 50) {
+        if (tempValue > 45) {
           tb_tempO = "-";
         } else if (tempValue < 32) {
           tb_tempO = "-";
@@ -79,7 +123,7 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
         }
 
         // room temp
-        if (roomtempValue > 50) {
+        if (roomtempValue > 40) {
           tb_tempA = "-";
         } else if (roomtempValue < 10) {
           tb_tempA = "-";
@@ -160,7 +204,12 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                           children: [
                             GestureDetector(
                               onTap: () {
-                                developer.log("clicked", name: 'debug.watch');
+                                setState(() {
+                                  currMode = "SPO2";
+                                  y_minimum = y_minimum_spo2;
+                                  y_maximum = y_maximum_spo2;
+                                  chartData.clear();
+                                });
                               },
                               child: Container(
                                   width: 150,
@@ -236,7 +285,12 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                             const SizedBox(width: 20),
                             GestureDetector(
                               onTap: () {
-                                developer.log("clicked", name: 'debug.watch');
+                                setState(() {
+                                  currMode = "HR";
+                                  y_minimum = y_minimum_hr;
+                                  y_maximum = y_maximum_hr;
+                                  chartData.clear();
+                                });
                               },
                               child: Container(
                                   width: 150,
@@ -316,7 +370,12 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             GestureDetector(
-                              onTap: () {},
+                              onTap: () {
+                                currMode = "TEMP_O";
+                                y_minimum = y_minimum_tempO;
+                                y_maximum = y_maximum_tempO;
+                                chartData.clear();
+                              },
                               child: Container(
                                   width: 150,
                                   height: 150,
@@ -387,7 +446,10 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                             const SizedBox(width: 20),
                             GestureDetector(
                               onTap: () {
-                                developer.log("clicked", name: 'debug.watch');
+                                currMode = "TEMP_A";
+                                y_minimum = y_minimum_tempA;
+                                y_maximum = y_maximum_tempA;
+                                chartData.clear();
                               },
                               child: Container(
                                   width: 150,
@@ -442,28 +504,151 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                         ),
                         const SizedBox(height: 20),
                         // graphs
-                        Container(
-                          alignment: Alignment.center,
-                          height: 200, // height of the graph
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("qwe"),
-                              const SizedBox(width: 20),
-                              Text("qwe"),
-                            ],
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height: 200,
+                              width: 280,
+                              child: SfCartesianChart(
+                                primaryYAxis: NumericAxis(
+                                  minimum: y_minimum,
+                                  maximum: y_maximum,
+                                ),
+                                series: <LineSeries<_ChartData, int>>[
+                                  LineSeries<_ChartData, int>(
+                                    onRendererCreated:
+                                        (ChartSeriesController controller) {
+                                      _chartSeriesController = controller;
+                                    },
+                                    dataSource: chartData,
+                                    xValueMapper: (_ChartData data, _) =>
+                                        data.time,
+                                    yValueMapper: (_ChartData data, _) =>
+                                        data.value,
+                                  )
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Column(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        String inputText = '';
+                                        return AlertDialog(
+                                          title:
+                                              Text('Save a $currMode record'),
+                                          content: TextField(
+                                            onChanged: (text) {
+                                              inputText = text;
+                                            },
+                                            decoration: const InputDecoration(
+                                                hintText: 'Enter description'),
+                                          ),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Cancel'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                String mode = "SpO2";
+                                                double value = 200;
+                                                switch (currMode) {
+                                                  case "SPO2":
+                                                    mode = "SpO2";
+                                                    value = spo22;
+                                                    break;
+                                                  case "HR":
+                                                    mode = "Heart Rate";
+                                                    value =
+                                                        heartbeatValue_double2;
+                                                    break;
+                                                  case "TEMP_O":
+                                                    mode = "Body Temperature";
+                                                    value = tempValue;
+                                                    break;
+                                                  case "TEMP_A":
+                                                    mode = "Room Temperature";
+                                                    value = roomtempValue;
+                                                    break;
+                                                }
+                                                String formattedDateTime =
+                                                    DateFormat(
+                                                            'dd/MM/yyyy HH:mm')
+                                                        .format(DateTime.now());
+
+                                                insertRealTimeData(
+                                                    formattedDateTime,
+                                                    mode,
+                                                    double.parse(value
+                                                        .toStringAsFixed(1)),
+                                                    inputText);
+                                                refreshDataHistory();
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('Save'),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.save,
+                                    color: Colors.black,
+                                    size: 30,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    refreshDataHistory();
+                                  },
+                                  icon: const Icon(Icons.sync,
+                                      color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 120),
+                        const SizedBox(height: 30),
+
+                        DataTable(
+                          columnSpacing: 15,
+                          columns: const [
+                            DataColumn(label: Text('Timestamp')),
+                            DataColumn(label: Text('Biosignal')),
+                            DataColumn(label: Text('Value')),
+                            DataColumn(label: Text('Description')),
+                          ],
+                          rows: dataHistory
+                              .map(
+                                (data) => DataRow(
+                                  cells: [
+                                    DataCell(Text(data.timestamp)),
+                                    DataCell(Text(data.bio)),
+                                    DataCell(Text(data.value.toString())),
+                                    DataCell(Text(data.description)),
+                                  ],
+                                ),
+                              )
+                              .toList(),
+                        ),
+
+                        const SizedBox(
+                          height: 50,
+                        ),
                         ElevatedButton(
-                          onPressed: () {},
-                          child: Text("Button"),
-                        ),
-                        const SizedBox(height: 120),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: Text("Button"),
-                        ),
+                            onPressed: () {
+                              readRealTimeData();
+                            },
+                            child: Text("qwe"))
                       ],
                     ),
                   )
@@ -501,7 +686,7 @@ Widget _buildBottomSheet1(
                 padding: const EdgeInsets.all(8.0),
                 child: Table(
                   border: TableBorder.all(),
-                  columnWidths: {
+                  columnWidths: const {
                     0: FlexColumnWidth(0.5),
                     1: FlexColumnWidth(),
                   },
@@ -599,7 +784,7 @@ Widget _buildBottomSheet1(
               ),
               const SizedBox(
                 height: 20,
-              )
+              ),
             ],
           )));
 }
@@ -611,7 +796,7 @@ Widget _buildBottomSheet2(
 ) {
   return Material(
     child: Container(
-        height: 500,
+        height: 800,
         decoration: const BoxDecoration(
           color: Color.fromARGB(161, 226, 251, 255),
           borderRadius: BorderRadius.only(
@@ -720,11 +905,6 @@ Widget _buildBottomSheet2(
                 padding: const EdgeInsets.all(8.0),
                 child: Table(
                   border: TableBorder.all(),
-                  // columnWidths: {
-                  //   0: FlexColumnWidth(),
-                  //   1: FixedColumnWidth(100.0),
-                  //   2: FixedColumnWidth(150.0),
-                  // },
                   children: [
                     TableRow(
                       children: [
@@ -806,14 +986,10 @@ Widget _buildBottomSheet2(
                   ],
                 ),
               ),
+              const SizedBox(height: 15),
             ],
           ),
-        )
-        // child: ListView(
-        //   controller: scrollController,
-        //   shrinkWrap: true,
-        // ),
-        ),
+        )),
   );
 }
 
@@ -841,7 +1017,7 @@ Widget _buildBottomSheet3(
                 padding: const EdgeInsets.all(8.0),
                 child: Table(
                   border: TableBorder.all(),
-                  columnWidths: {
+                  columnWidths: const {
                     0: FlexColumnWidth(0.5),
                     1: FlexColumnWidth(),
                   },
@@ -943,4 +1119,10 @@ Widget _buildBottomSheet3(
               )
             ],
           )));
+}
+
+class _ChartData {
+  _ChartData(this.time, this.value);
+  final int time;
+  final num value;
 }

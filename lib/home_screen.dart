@@ -425,7 +425,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 20),
                           ElevatedButton(
-                            onPressed: () => deleteData(),
+                            onPressed: () => deleteRealTimeTable(),
                             child: const Text('delete data'),
                           ),
                           const SizedBox(height: 20),

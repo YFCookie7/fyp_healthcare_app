@@ -18,6 +18,16 @@ Future<void> initDatabase() async {
           bodyTemperature REAL
         )
       ''');
+
+    await db.execute('''
+        CREATE TABLE IF NOT EXISTS REAL_TIME (
+          id INTEGER PRIMARY KEY,
+          timestamp TEXT,
+          bio TEXT,
+          value REAL,
+          description TEXT
+        )
+      ''');
   });
 
   var tables = await database.rawQuery(
@@ -58,6 +68,22 @@ Future<void> insertData() async {
   await database.close();
 }
 
+Future<void> insertRealTimeData(
+    String timestamp, String bio, double value, String description) async {
+  var databasesPath = await getDatabasesPath();
+  String path = join(databasesPath, 'SQMS.db');
+
+  Database database = await openDatabase(path, version: 1);
+
+  await database.rawInsert(
+    'INSERT INTO REAL_TIME(timestamp, bio, value, description) VALUES(?, ?, ?, ?)',
+    [timestamp, bio, value, description],
+  );
+  developer.log("Real time data inserted", name: 'debug.db');
+
+  await database.close();
+}
+
 Future<void> readData() async {
   var databasesPath = await getDatabasesPath();
   String path = join(databasesPath, 'SQMS.db');
@@ -75,6 +101,37 @@ Future<void> readData() async {
   await database.close();
 }
 
+Future<List<DataHistory>> readRealTimeData() async {
+  var databasesPath = await getDatabasesPath();
+  String path = join(databasesPath, 'SQMS.db');
+
+  Database database = await openDatabase(path, version: 1);
+
+  List<Map<String, dynamic>> result =
+      await database.rawQuery('SELECT * FROM REAL_TIME');
+
+  List<DataHistory> dataHistory = [];
+  for (var row in result) {
+    DataHistory data = DataHistory(
+      timestamp: row['timestamp'],
+      bio: row['bio'],
+      value: row['value'],
+      description: row['description'],
+    );
+    dataHistory.add(data);
+  }
+
+  developer.log('Selected data from REAL_TIME table:', name: 'debug.home');
+  for (var data in dataHistory) {
+    developer.log(data.timestamp, name: 'debug.home');
+    developer.log(data.value.toString(), name: 'debug.home');
+  }
+
+  await database.close();
+
+  return dataHistory;
+}
+
 Future<void> deleteData() async {
   var databasesPath = await getDatabasesPath();
   String path = join(databasesPath, 'SQMS.db');
@@ -82,6 +139,17 @@ Future<void> deleteData() async {
   Database database = await openDatabase(path, version: 1);
 
   await database.rawDelete('DELETE FROM DATA');
+
+  await database.close();
+}
+
+Future<void> deleteRealTimeTable() async {
+  var databasesPath = await getDatabasesPath();
+  String path = join(databasesPath, 'SQMS.db');
+
+  Database database = await openDatabase(path, version: 1);
+
+  await database.rawDelete('DELETE FROM REAL_TIME');
 
   await database.close();
 }
@@ -97,4 +165,18 @@ Future<void> deleteDatabaseFile() async {
   } catch (e) {
     developer.log("Error deleting database: $e", name: 'debug.home');
   }
+}
+
+class DataHistory {
+  final String timestamp;
+  final String bio;
+  final double value;
+  final String description;
+
+  DataHistory({
+    required this.timestamp,
+    required this.bio,
+    required this.value,
+    required this.description,
+  });
 }

@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:fyp_healthcare_app/device_pi_screen.dart';
 import 'package:fyp_healthcare_app/device_watch_screen.dart';
-import 'package:fyp_healthcare_app/device_wearable_screen.dart';
-import 'package:fyp_healthcare_app/setting_screen.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:developer' as developer;
@@ -43,6 +41,12 @@ class _DeviceScreenState extends State<DeviceScreen> {
   void _checkBtStatus() async {
     if (await BluetoothBLE.isConnected()) {
       developer.log("Connected to device", name: 'debug.device');
+      Fluttertoast.showToast(
+          msg: "Connected to smart watch",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          fontSize: 16.0);
       setState(() {
         bt_status_animation = "assets/lottie/tick_lottie.json";
         bt_isVisible = true;
