@@ -15,6 +15,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:select_dialog/select_dialog.dart';
 import 'dart:math';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fyp_healthcare_app/globals.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   const OnBoardingScreen({Key? key}) : super(key: key);

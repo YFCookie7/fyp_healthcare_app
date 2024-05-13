@@ -281,13 +281,59 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> storeSleepData() async {
-    if (isSleeping == true) {
+    if (isSleeping == true || overrideSleep == true) {
       developer.log("Storing sleep data", name: 'debug.home');
       await insertSleepData(
           DateTime.now().toString(), tempValue, heartbeatValue_double2, spo22);
     } else {
       developer.log("User is not sleeping", name: 'debug.home');
     }
+  }
+
+  Future<void> getSleepCycles() async {
+    var databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'SQMS.db');
+
+    Database database = await openDatabase(path, version: 1);
+
+    // Query all records in Sleep table
+    List<Map<String, dynamic>> records =
+        await database.rawQuery('SELECT * FROM SLEEP ORDER BY id');
+
+    // Declare a list to store identified sleep events
+    List<Map<String, dynamic>> sleepCycles = [];
+
+    if (records.isNotEmpty) {
+      DateTime startTimestamp = DateTime.parse(records[0]['timestamp']);
+      DateTime endTimestamp;
+
+      for (int i = 1; i < records.length; i++) {
+        DateTime currentTimestamp = DateTime.parse(records[i]['timestamp']);
+
+        // If record timestamp differenc exceeds 1 minute, consider it as a new sleep event
+        if (currentTimestamp.difference(startTimestamp).inMinutes > 1) {
+          endTimestamp = DateTime.parse(records[i - 1]['timestamp']);
+          sleepCycles.add({
+            'start': startTimestamp.toIso8601String(),
+            'end': endTimestamp.toIso8601String()
+          });
+          startTimestamp = currentTimestamp;
+        }
+      }
+
+      endTimestamp = DateTime.parse(records.last['timestamp']);
+      sleepCycles.add({
+        'start': startTimestamp.toIso8601String(),
+        'end': endTimestamp.toIso8601String()
+      });
+    }
+
+    for (var cycle in sleepCycles) {
+      developer.log('Start: ${cycle['start']}, End: ${cycle['end']}',
+          name: 'debug.home');
+    }
+
+    await database.close();
   }
 
   @override
@@ -349,9 +395,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: () => insertSleepData(
-                              "2021-10-10 10:10:10", 98.6, 60, 36.5),
-                          child: const Text('insert test sleep data'),
+                          onPressed: () => getSleepCycles(),
+                          child: const Text('get sleep cycles'),
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(

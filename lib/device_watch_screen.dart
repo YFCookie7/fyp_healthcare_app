@@ -321,7 +321,7 @@ class _WatchDeviceScreenState extends State<WatchDeviceScreen> {
                                           top: 10,
                                           left: 13,
                                           child: Text(
-                                            "PR",
+                                            "HR",
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 24,

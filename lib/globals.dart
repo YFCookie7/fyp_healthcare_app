@@ -11,3 +11,4 @@ double spo22 = 400;
 String tb_spo22 = '88%'; // will be deprecated
 
 bool isUserSleeping = false;
+bool overrideSleep = false;

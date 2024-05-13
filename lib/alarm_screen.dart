@@ -6,6 +6,7 @@ import 'dart:developer' as developer;
 import 'package:alarm/alarm.dart';
 import 'package:alarm/model/alarm_settings.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:fyp_healthcare_app/globals.dart';
 import 'package:glassmorphism/glassmorphism.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -103,6 +104,11 @@ class _AlarmScreenState extends State<AlarmScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String piAddress = prefs.getString('piAddress') ?? '';
     String url = 'http://$piAddress:5000';
+
+    setState(() {
+      isToggled = false;
+      overrideSleep = false;
+    });
 
     try {
       final response = await http.post(
@@ -576,6 +582,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 await prefs.setString('alarmTime',
                                     selectedTime.toString().substring(11, 16));
                                 setState(() {
+                                  overrideSleep = true;
                                   tb_alarm =
                                       selectedTime.toString().substring(11, 16);
                                   isToggled = true;
@@ -592,6 +599,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                 await prefs.remove('alarmTime');
                                 setState(() {
                                   isToggled = false;
+                                  overrideSleep = false;
                                 });
                               },
                               child: const Text('Cancel Alarm'),
