@@ -280,13 +280,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  // void _handleDataReceived(String data) {
-  //   developer.log(data, name: 'debug.home');
-  //   setState(() {
-  //     textbox = "$data home ${Random().nextInt(1000)}";
-  //   });
-  // }
-
   Future<void> getSleepRecordsTimestamp() async {
     var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'SQMS.db');
@@ -344,14 +337,6 @@ class _HomeScreenState extends State<HomeScreen> {
         systemOverlayStyle:
             const SystemUiOverlayStyle(statusBarColor: Colors.blue),
         backgroundColor: Colors.transparent,
-        // title: const Padding(
-        //   padding: EdgeInsets.only(top: 20.0, left: 5.0),
-        //   child: Text(
-        //     'My Devices',
-        //     style: TextStyle(
-        //         fontFamily: 'PatuaOne', fontSize: 24, color: Colors.black),
-        //   ),
-        // ),
       ),
       body: Container(
         height: double.infinity,

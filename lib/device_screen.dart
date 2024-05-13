@@ -10,6 +10,7 @@ import 'package:giffy_dialog/giffy_dialog.dart' as giffy_dialog;
 import 'dart:async';
 import 'package:fyp_healthcare_app/data-comm/ble.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DeviceScreen extends StatefulWidget {
   const DeviceScreen({Key? key}) : super(key: key);
@@ -19,7 +20,7 @@ class DeviceScreen extends StatefulWidget {
 }
 
 class _DeviceScreenState extends State<DeviceScreen> {
-  final pi_address = 'http://192.168.1.109:5000';
+  String pi_address = '';
   String receivedData = '';
   String bt_status_animation = "assets/lottie/tick_lottie.json";
   String pi_status_animation = "assets/lottie/tick_lottie.json";
@@ -63,9 +64,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
 
   Future<void> checkPiStatus() async {
     bool search_result = false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String pi_address = prefs.getString('piAddress') ?? '';
     try {
       final response = await http
-          .get(Uri.parse(pi_address))
+          .get(Uri.parse("http://$pi_address:5000"))
           .timeout(const Duration(seconds: 2));
       developer.log('haha', name: 'debug.device');
       if (response.statusCode == 200) {

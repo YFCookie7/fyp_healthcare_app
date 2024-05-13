@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'dart:developer' as developer;
@@ -20,7 +21,6 @@ class AlarmScreen extends StatefulWidget {
 }
 
 class _AlarmScreenState extends State<AlarmScreen> {
-  // late StreamSubscription<dynamic> _alarmRingSubscription;
   String textbox = 'Hi';
   String tb_start = '00:00';
   String tb_end = '06:00';
@@ -96,10 +96,39 @@ class _AlarmScreenState extends State<AlarmScreen> {
     }
   }
 
+  Future<void> ringAlarm() async {
+    Map<String, dynamic> data = {"command": "alarm"};
+
+    String jsonData = json.encode(data);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String piAddress = prefs.getString('piAddress') ?? '';
+    String url = 'http://$piAddress:5000';
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonData,
+      );
+
+      if (response.statusCode == 200) {
+        developer.log('Data sent successfully', name: 'debug_alarm');
+      } else {
+        developer.log('Failed to send data. Error code: ${response.statusCode}',
+            name: 'debug_alarm');
+      }
+    } catch (e) {
+      developer.log('Failed to send data. Error: $e', name: 'debug_alarm');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     initializeData();
+    Alarm.ringStream.stream.listen((_) => ringAlarm());
   }
 
   @override
@@ -535,12 +564,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
                                   androidFullScreenIntent: true,
                                 );
                                 await Alarm.set(alarmSettings: alarmSettings);
-
-                                // _alarmRingSubscription =
-                                //     Alarm.ringStream.stream.listen((_) async {
-                                //   developer.log('Alarm is ringing',
-                                //       name: 'debug_alarm');
-                                // });
 
                                 Fluttertoast.showToast(
                                     msg:

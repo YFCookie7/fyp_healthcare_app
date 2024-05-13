@@ -41,7 +41,7 @@ class SplashScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 80.0),
             const Text(
-              'Sleep Tracker',
+              'Health Tracker',
               style: TextStyle(
                   fontFamily: 'ProtestRiot', fontSize: 44, color: Colors.white),
             ),

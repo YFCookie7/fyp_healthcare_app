@@ -41,8 +41,8 @@ class _PiDeviceScreenState extends State<PiDeviceScreen> {
   Future<void> getPiAddress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     piAddress = prefs.getString('piAddress') ?? '';
-    piAddress = "http://$piAddress:5000";
-    // piAddress = "http://192.168.1.109:5000";
+    // piAddress = "http://$piAddress:5000";
+    // piAddress = "http://192.168.129.27:5000";
   }
 
   void _checkSleepStatus() {
@@ -55,21 +55,22 @@ class _PiDeviceScreenState extends State<PiDeviceScreen> {
   void _fetchStatus() async {
     try {
       final response = await http
-          .read(Uri.parse(piAddress))
+          .read(Uri.parse("http://$piAddress:5000"))
           .timeout(const Duration(seconds: 1));
       final responseData = jsonDecode(response);
 
       setState(() {
         deviceStatusColor = Colors.green;
-        if (responseData['status'] == "running") {
+        if (responseData['status'] == "sleeping") {
           isUserSleeping = true;
           iconStatus = Icons.check_circle;
           iconRecording = Icons.check_circle;
           deviceRecordingColor = Colors.green;
           developer.log("User is sleeping", name: 'debug.pi');
-        } else {
+        } else if (responseData['status'] == "waking") {
           isUserSleeping = false;
           iconRecording = Icons.error;
+          iconStatus = Icons.check_circle;
           deviceRecordingColor = Colors.red;
           developer.log("User is not sleeping", name: 'debug.pi');
         }
@@ -157,7 +158,8 @@ class _PiDeviceScreenState extends State<PiDeviceScreen> {
                         fit: BoxFit.cover,
                       ),
                       const SizedBox(height: 40),
-                      Text("IP address: ${piAddress.substring(7)}",
+                      // Text("IP address: ${piAddress.substring(7)}",
+                      Text("IP address: ${piAddress}",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 40),
