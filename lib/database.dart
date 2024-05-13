@@ -28,6 +28,16 @@ Future<void> initDatabase() async {
           description TEXT
         )
       ''');
+
+    await db.execute('''
+        CREATE TABLE IF NOT EXISTS SLEEP (
+          id INTEGER PRIMARY KEY,
+          timestamp TEXT,
+          spo2_value REAL,
+          heart_rate_value REAL,
+          body_temperature REAL
+        )
+      ''');
   });
 
   var tables = await database.rawQuery(
@@ -36,34 +46,6 @@ Future<void> initDatabase() async {
   } else {
     developer.log("table exists", name: 'debug.home');
   }
-
-  await database.close();
-}
-
-Future<void> insertData() async {
-  var databasesPath = await getDatabasesPath();
-  String path = join(databasesPath, 'SQMS.db');
-
-  Database database = await openDatabase(path, version: 1);
-
-  DateTime startDate = DateTime(2024, 5, 2, 0, 0, 0);
-  DateTime endDate = startDate.add(const Duration(hours: 8));
-
-  await database.transaction((txn) async {
-    for (DateTime dateTime = startDate;
-        dateTime.isBefore(endDate);
-        dateTime = dateTime.add(const Duration(seconds: 30))) {
-      Random random = Random();
-      int spo2 = (85 + random.nextInt(16));
-      int heartRate = (40 + random.nextInt(20));
-      double bodyTemperature = 35 + random.nextDouble() * (37 - 35);
-
-      await txn.rawInsert(
-        'INSERT INTO DATA(timestamp, spo2, heartRate, bodyTemperature) VALUES(?, ?, ?, ?)',
-        [dateTime.toIso8601String(), spo2, heartRate, bodyTemperature],
-      );
-    }
-  });
 
   await database.close();
 }
@@ -84,19 +66,50 @@ Future<void> insertRealTimeData(
   await database.close();
 }
 
-Future<void> readData() async {
+Future<void> insertSleepData(
+  String timestamp,
+  double spo2Value,
+  double heartRateValue,
+  double bodyTemperature,
+) async {
+  var databasesPath = await getDatabasesPath();
+  String path = join(databasesPath, 'SQMS.db');
+
+  Database database = await openDatabase(path, version: 1);
+
+  await database.rawInsert(
+    'INSERT INTO SLEEP(timestamp, spo2_value, heart_rate_value, body_temperature) VALUES(?, ?, ?, ?)',
+    [timestamp, spo2Value, heartRateValue, bodyTemperature],
+  );
+  developer.log("sleep data inserted", name: 'debug.db');
+
+  await database.close();
+}
+
+Future<void> readSleepData() async {
   var databasesPath = await getDatabasesPath();
   String path = join(databasesPath, 'SQMS.db');
 
   Database database = await openDatabase(path, version: 1);
 
   List<Map<String, dynamic>> result =
-      await database.rawQuery('SELECT * FROM DATA');
+      await database.rawQuery('SELECT * FROM SLEEP');
 
-  developer.log('Selected data from DATA table:', name: 'debug.home');
+  developer.log('Selected data from SLEEP table:', name: 'debug.home');
   for (var row in result) {
     developer.log(row.toString(), name: 'debug.home');
   }
+
+  await database.close();
+}
+
+Future<void> deleteSleepTable() async {
+  var databasesPath = await getDatabasesPath();
+  String path = join(databasesPath, 'SQMS.db');
+
+  Database database = await openDatabase(path, version: 1);
+
+  await database.rawDelete('DELETE FROM SLEEP');
 
   await database.close();
 }

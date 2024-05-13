@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   String textbox = 'Latest sleep record';
   late final String piAddress;
   bool? isSleeping;
-  List<DataPoint> data = [];
 
   // biosignal
   String receivedData = '';
@@ -87,8 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
     initDatabase();
     Timer.periodic(const Duration(seconds: 5), (timer) {
       updateSleepState();
+      storeSleepData();
     });
-    fetchData();
   }
 
   void _handleDataReceived(String data) {
@@ -252,59 +251,11 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> fetchData() async {
-    var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'SQMS.db');
-
-    Database database = await openDatabase(path, version: 1);
-
-    List<Map<String, dynamic>> result =
-        await database.rawQuery('SELECT * FROM DATA');
-
-    setState(() {
-      data = result
-          .map<DataPoint>((row) => DataPoint(
-                DateTime.parse(row['timestamp']),
-                row['spo2'],
-              ))
-          .toList();
-    });
-
-    await database.close();
-  }
-
   @override
   void dispose() {
     BluetoothBLE.unregisterCallback(_handleDataReceived);
     BluetoothBLE.disconnectedDevice();
     super.dispose();
-  }
-
-  Future<void> getSleepRecordsTimestamp() async {
-    var databasesPath = await getDatabasesPath();
-    String path = join(databasesPath, 'SQMS.db');
-
-    Database database = await openDatabase(path, version: 1);
-
-    List<Map<String, dynamic>> firstRecordResult = await database
-        .rawQuery('SELECT timestamp FROM data ORDER BY timestamp ASC LIMIT 1');
-    DateTime? firstTimestamp;
-    if (firstRecordResult.isNotEmpty) {
-      firstTimestamp = DateTime.parse(firstRecordResult[0]['timestamp']);
-    }
-
-    List<Map<String, dynamic>> lastRecordResult = await database
-        .rawQuery('SELECT timestamp FROM data ORDER BY timestamp DESC LIMIT 1');
-    DateTime? lastTimestamp;
-    if (lastRecordResult.isNotEmpty) {
-      lastTimestamp = DateTime.parse(lastRecordResult[0]['timestamp']);
-    }
-    developer.log('Timestamp of the first sleep record: $firstTimestamp',
-        name: 'debug.home');
-    developer.log('Timestamp of the last sleep record: $lastTimestamp',
-        name: 'debug.home');
-
-    await database.close();
   }
 
   Future<void> updateSleepState() async {
@@ -326,6 +277,16 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (error) {
       developer.log('Error making GET request: $error', name: 'debug.home');
+    }
+  }
+
+  Future<void> storeSleepData() async {
+    if (isSleeping == true) {
+      developer.log("Storing sleep data", name: 'debug.home');
+      await insertSleepData(
+          DateTime.now().toString(), tempValue, heartbeatValue_double2, spo22);
+    } else {
+      developer.log("User is not sleeping", name: 'debug.home');
     }
   }
 
@@ -378,49 +339,42 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Color((0xFFFFFFFF)).withOpacity(0.5),
                     ],
                   ),
-                  child: Scaffold(
-                    body: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            textbox,
-                            style: const TextStyle(fontSize: 20),
-                          ),
-                          SfCartesianChart(
-                            primaryXAxis: DateTimeAxis(),
-                            series: <CartesianSeries>[
-                              SplineSeries<DataPoint, DateTime>(
-                                dataSource: data,
-                                xValueMapper: (DataPoint data, _) =>
-                                    data.timestamp,
-                                yValueMapper: (DataPoint data, _) => data.spo2,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () => insertData(),
-                            child: const Text('insert test data'),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () => readData(),
-                            child: const Text('read test data'),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () => deleteRealTimeTable(),
-                            child: const Text('delete data'),
-                          ),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                            onPressed: () => getSleepRecordsTimestamp(),
-                            child: const Text('Get data'),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          textbox,
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () => insertSleepData(
+                              "2021-10-10 10:10:10", 98.6, 60, 36.5),
+                          child: const Text('insert test sleep data'),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () => readSleepData(),
+                          child: const Text('read test data'),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () => deleteSleepTable(),
+                          child: const Text('delete sleep data'),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () => isSleeping = true,
+                          child: const Text('sleep'),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () => isSleeping = false,
+                          child: const Text('stop sleep'),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
                     ),
                   )),
             ),
@@ -429,11 +383,4 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
-
-class DataPoint {
-  final DateTime timestamp;
-  final int spo2;
-
-  DataPoint(this.timestamp, this.spo2);
 }
