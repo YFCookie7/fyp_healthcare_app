@@ -88,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
       updateSleepState();
       storeSleepData();
     });
+    getSleepCycles();
   }
 
   void _handleDataReceived(String data) {
@@ -306,6 +307,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (records.isNotEmpty) {
       DateTime startTimestamp = DateTime.parse(records[0]['timestamp']);
       DateTime endTimestamp;
+      double avgSPO2 = 0;
+      double avgHR = 0;
+      double avgTemp = 0;
+      int count = 0;
 
       for (int i = 1; i < records.length; i++) {
         DateTime currentTimestamp = DateTime.parse(records[i]['timestamp']);
@@ -315,22 +320,62 @@ class _HomeScreenState extends State<HomeScreen> {
           endTimestamp = DateTime.parse(records[i - 1]['timestamp']);
           sleepCycles.add({
             'start': startTimestamp.toIso8601String(),
-            'end': endTimestamp.toIso8601String()
+            'end': endTimestamp.toIso8601String(),
+            'avg_spo2': avgSPO2 / count,
+            'avg_hr': avgHR / count,
+            'avg_temp': avgTemp / count
           });
           startTimestamp = currentTimestamp;
+          avgSPO2 = 0;
+          avgHR = 0;
+          avgTemp = 0;
+          count = 0;
+        } else {
+          avgSPO2 += records[i]['spo2_value'];
+          avgHR += records[i]['heart_rate_value'];
+          avgTemp += records[i]['body_temperature'];
+          count++;
         }
       }
 
       endTimestamp = DateTime.parse(records.last['timestamp']);
       sleepCycles.add({
         'start': startTimestamp.toIso8601String(),
-        'end': endTimestamp.toIso8601String()
+        'end': endTimestamp.toIso8601String(),
+        'avg_spo2': avgSPO2 / count,
+        'avg_hr': avgHR / count,
+        'avg_temp': avgTemp / count
       });
     }
+    setState(() {
+      textbox = "";
+    });
 
     for (var cycle in sleepCycles) {
       developer.log('Start: ${cycle['start']}, End: ${cycle['end']}',
           name: 'debug.home');
+      developer.log(
+          "SPO2: ${cycle['avg_spo2']}, HR: ${cycle['avg_hr']}, Temp: ${cycle['avg_temp']}",
+          name: 'debug.home');
+      setState(() {
+        String startTimestamp = DateTime.parse(cycle['start'])
+            .toLocal()
+            .toString()
+            .substring(0, 16);
+        String endTimestamp =
+            DateTime.parse(cycle['end']).toLocal().toString().substring(0, 16);
+        Duration duration = DateTime.parse(cycle['end'])
+            .difference(DateTime.parse(cycle['start']));
+
+        double avgSpo2 = (cycle['avg_spo2'] as double).roundToDouble();
+        double avgHR = (cycle['avg_hr'] as double).roundToDouble();
+        double avgTemp = (cycle['avg_temp'] as double).roundToDouble();
+
+        textbox += "Start: $startTimestamp\nEnd: $endTimestamp\n";
+        textbox += "SPO2: $avgSpo2, HR: $avgHR, Temp: $avgTemp\n";
+        textbox +=
+            "Sleep Duration: ${duration.inHours} hours ${duration.inMinutes % 60} minutes\n\n";
+      });
     }
 
     await database.close();
@@ -389,36 +434,39 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          textbox,
-                          style: const TextStyle(fontSize: 20),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            textbox,
+                            style: const TextStyle(fontSize: 20),
+                          ),
                         ),
                         const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: () => getSleepCycles(),
-                          child: const Text('get sleep cycles'),
+                          child: const Text('Fetch sleep data'),
                         ),
                         const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () => readSleepData(),
-                          child: const Text('read test data'),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () => deleteSleepTable(),
-                          child: const Text('delete sleep data'),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () => isSleeping = true,
-                          child: const Text('sleep'),
-                        ),
-                        const SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () => isSleeping = false,
-                          child: const Text('stop sleep'),
-                        ),
-                        const SizedBox(height: 20),
+                        // ElevatedButton(
+                        //   onPressed: () => readSleepData(),
+                        //   child: const Text('read test data'),
+                        // ),
+                        // const SizedBox(height: 20),
+                        // ElevatedButton(
+                        //   onPressed: () => deleteSleepTable(),
+                        //   child: const Text('delete sleep data'),
+                        // ),
+                        // const SizedBox(height: 20),
+                        // ElevatedButton(
+                        //   onPressed: () => isSleeping = true,
+                        //   child: const Text('sleep'),
+                        // ),
+                        // const SizedBox(height: 20),
+                        // ElevatedButton(
+                        //   onPressed: () => isSleeping = false,
+                        //   child: const Text('stop sleep'),
+                        // ),
+                        // const SizedBox(height: 20),
                       ],
                     ),
                   )),
