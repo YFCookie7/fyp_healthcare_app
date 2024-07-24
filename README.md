@@ -4,7 +4,9 @@ A mobile healthcare app that pair with wearable sleep tracker and visualize bio 
 
 - - - -
 Splash Screen:
-<img src="demo/1.jpg" alt="Splash Screen" width="200"/>
+<div style="display: flex; flex-direction: row;">
+    <img src="demo/1.jpg" alt="Onboarding Screen 1" width="200" style="margin-right: 10px;"/>
+</div>
 
 - - - -
 Onboarding Screen:
